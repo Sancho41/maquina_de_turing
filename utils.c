@@ -54,3 +54,14 @@ int *file_to_int(char *file, int *tam)
   }
   return int_file;
 }
+
+int blank_line(char *line)
+{
+  int i;
+  int blank_char = 0;
+  int size = strlen(line);
+  for (i = 0; i < size; i++)
+    blank_char += line[i] == ' ' || line[i] == 13 || line[i] == 10;
+
+  return blank_char == size;
+}
