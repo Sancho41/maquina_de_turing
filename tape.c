@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#define BLANK '_'
 
 typedef struct TAPE
 {
@@ -28,8 +29,8 @@ TAPE *intialize_tape(char *entry, int entry_size)
   CELL *new = NULL;
   TAPE *new_tape = (TAPE *)malloc(sizeof(TAPE));
 
-  CELL *last_cell = new_cell('_');
-  CELL *first_cell = new_cell('_');
+  CELL *last_cell = new_cell(BLANK);
+  CELL *first_cell = new_cell(BLANK);
 
   // Adiciona a entrada na fita
   for (i = 0; i < entry_size; i++)
@@ -45,7 +46,7 @@ TAPE *intialize_tape(char *entry, int entry_size)
       new_tape->head = new;
     }
 
-    // Adiciona o caractere branco no final da fita '_'
+    // Adiciona o caractere branco no final da fita BLANK
     if (i == entry_size - 1)
     {
       new->next = last_cell;
@@ -55,7 +56,7 @@ TAPE *intialize_tape(char *entry, int entry_size)
     aux = new;
   }
 
-  // Adiciona o caractere branco no inicio da fita '_'
+  // Adiciona o caractere branco no inicio da fita BLANK
   first_cell->next = new_tape->head;
   new_tape->head->prev = first_cell;
 
@@ -69,7 +70,7 @@ void move_right(TAPE *t)
 
   if (head->next == NULL)
   {
-    aux = new_cell('_');
+    aux = new_cell(BLANK);
     aux->prev = head;
     head->next = aux;
   }
@@ -84,7 +85,7 @@ void move_left(TAPE *t)
 
   if (head->prev == NULL)
   {
-    aux = new_cell('_');
+    aux = new_cell(BLANK);
     aux->next = head;
     head->prev = aux;
   }
@@ -101,11 +102,19 @@ void print_tape(TAPE *tape)
     start = start->prev;
   aux = start;
 
-  while (aux->next != NULL)
+  while (aux != NULL)
   {
-    printf("[%c]", aux->value);
+    if (aux == tape->head)
+    {
+      printf("\033[1;31m");
+      printf("[%c]", aux->value);
+      printf("\033[0m");
+    }
+    else
+    {
+      printf("[%c]", aux->value);
+    }
+
     aux = aux->next;
   }
-  printf("[%c]", aux->value);
-  printf("\n");
 }

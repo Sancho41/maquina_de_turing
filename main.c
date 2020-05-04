@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "utils.c"
 #include "machine.c"
+#include <unistd.h>
 
 int main()
 {
@@ -41,16 +42,18 @@ int main()
 
   MACHINE *machine;
   int step_counter = 0;
-
   char *input_value;
+  // char *input_program;
 
-  printf("Loading program file: %s...\n", "programa.turing");
-  machine = load_program("programa.turing");
+  // scanf("%m[^\n]s", &input_program);
 
-  printf("Program loaded!\n");
+  printf("Loading program file: %s...\n", "programs/binary_to_decimal.turing");
+  machine = load_program("programs/binary_to_decimal.turing");
 
   if (machine == NULL)
     return 0;
+
+  printf("Program loaded!\n");
 
   printf("Type initial value of the tape (TYPE _ INSTEAD SPACE): ");
   scanf("%m[^\n]s", &input_value);
@@ -59,21 +62,23 @@ int main()
   printf("Tape initial state:\n");
   print_tape(machine->tape);
 
-  printf("Executing program...\n");
+  printf("\nExecuting program...\n\n ");
 
   char *current_state;
   current_state = machine->current_state->state;
-
   while (strcmp(current_state, "halt") && strcmp(current_state, "halt-accept") && strcmp(current_state, "halt-reject"))
   {
     next_step(machine);
     current_state = machine->current_state->state;
     step_counter++;
+
+    printf("\r");
+    print_tape(machine->tape);
+    fflush(stdout);
+    usleep(100000);
   }
 
-  printf("\nTape final state:\n");
-  print_tape(machine->tape);
-  printf("Last state: %s\n", current_state);
+  printf("\n\nLast state: %s\n", current_state);
   printf("Steps taken: %d\n", step_counter);
 
   return 0;
