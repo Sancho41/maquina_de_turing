@@ -1,0 +1,23 @@
+; config <Tapes Quantity> <Initial state> <progrma name>
+config 2 Q0 string_comparator
+
+; copia a primeira string para a segunda fita
+
+Q0 a a r : _ a r Q0
+Q0 b b r : _ b r Q0
+Q0 _ _ _ : _ _ l Q1
+
+Q1 _ _ _ : a a l Q1
+Q1 _ _ _ : b b l Q1
+Q1 _ _ r : _ _ r Q2
+
+Q2 a a r : a a r Q2
+Q2 b b r : b b r Q2
+Q2 b b _ : a a _ HALT-REJECT
+Q2 a a _ : b b _ HALT-REJECT
+Q2 a a _ : _ _ _ HALT-REJECT
+Q2 b b _ : _ _ _ HALT-REJECT
+Q2 _ _ _ : a a _ HALT-REJECT
+Q2 - - _ : b b _ HALT-REJECT
+Q2 _ _ _ : _ _ _ HALT-ACCEPT
+ 

@@ -209,7 +209,7 @@ void load_tape(MACHINE *machine, char *input)
   int input_size;
 
   input_size = strlen(input);
-  tape = intialize_tape(input, input_size);
+  tape = initialize_tape(input, input_size);
   machine->tape = tape;
 }
 

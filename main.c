@@ -47,8 +47,8 @@ int main()
 
   // scanf("%m[^\n]s", &input_program);
 
-  printf("Loading program file: %s...\n", "programs/binary_to_decimal.turing");
-  machine = load_program("programs/binary_to_decimal.turing");
+  printf("Loading program file: %s...\n", "programs/palindrome_detector.turing");
+  machine = load_program("programs/palindrome_detector.turing");
 
   if (machine == NULL)
     return 0;

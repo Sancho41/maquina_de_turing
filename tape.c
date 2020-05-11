@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #define BLANK '_'
+#define EMPTY "_"
 
 typedef struct TAPE
 {
@@ -22,7 +23,20 @@ CELL *new_cell(char value)
   return new;
 }
 
-TAPE *intialize_tape(char *entry, int entry_size)
+char *get_tapes_heads(TAPE **tapes, int qtd)
+{
+  char *heads;
+  int i;
+  heads = (char *)malloc(sizeof(char) * qtd);
+
+  for (i = 0; i < qtd; i++)
+  {
+    heads[i] = tapes[i]->head->value;
+  }
+  return heads;
+}
+
+TAPE *initialize_tape(char *entry, int entry_size)
 {
   int i;
   CELL *aux = NULL;
@@ -57,8 +71,17 @@ TAPE *intialize_tape(char *entry, int entry_size)
   }
 
   // Adiciona o caractere branco no inicio da fita BLANK
-  first_cell->next = new_tape->head;
-  new_tape->head->prev = first_cell;
+  if (entry_size > 0)
+  {
+    first_cell->next = new_tape->head;
+    new_tape->head->prev = first_cell;
+  }
+  else
+  {
+    first_cell->next = last_cell;
+    last_cell->prev = first_cell;
+    new_tape->head = first_cell;
+  }
 
   return new_tape;
 }

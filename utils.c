@@ -65,3 +65,27 @@ int blank_line(char *line)
 
   return blank_char == size;
 }
+
+char **split(char *string, int qtd_strings)
+{
+  char **string_vector;
+  char *token;
+  char *aux;
+  int index = 0;
+
+  token = strtok(string, " :\n\r");
+
+  string_vector = (char **)malloc(sizeof(char *) * qtd_strings);
+
+  while (token != NULL)
+  {
+    aux = (char *)malloc(sizeof(char) * strlen(token));
+    strcpy(aux, token);
+
+    string_vector[index] = aux;
+
+    token = strtok(NULL, " :\n\r");
+    index++;
+  }
+  return string_vector;
+}
