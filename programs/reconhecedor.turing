@@ -1,36 +1,61 @@
 config 2 0 reconhecedor
 
-0 # * r : \s * * c1i
-0 \n * r : * * * 0
+;VAI PARA VERIFICAÇÃO DE NOVA LINHA
+0 \n * r : * * * novalinha
 
+;VAI PARA VERIFICAÇÃO DE INCLUDE
+0 # * r : \s * * c1i
+
+;VAI PARA A VERIFICAÇÃO DE COMENTÁRIO
+0 / * r : * * * comentario
+
+
+; VERIFICA INCLUDE
+; verifica se está escrito exatamente #include 
 c1i i * r : \s * * c1n
 c1n n * r : \s * * c1c
 c1c c * r : \s * * c1l
-
 c1l l * r : \s * * c1u
 c1u u * r : \s * * c1d
 c1d d * r : \s * * c1e
 c1e e * r : \s * * c1s
 c1s \s * r : \s * * c1a
 
+; Verifica abertura de marcador
 c1a " * r : \s " r c1b
 c1a < * r : \s < r c1b
 
+;Verifica se o que está dentro dos marcadores não tem espaço ne nova linha nem tab
 c1b * * r : \s * * c1b
-
-
-
+c1b \s * * : * * * HALT-REJECT
+c1b \t * * : * * * HALT-REJECT
+c1b \n * * : * * * HALT-REJECT
 c1b " * * : \s * l c1c
 c1b > * * : \s * l c1c
 
+; Verifica fechamento de marcador
 c1c " * r : " \s * 0
 c1c > * r : < \s * 0
 
 
+;VERIFICA COMENTARIO
+comentario / * r : * * * comentario2
+
+comentario2 \s * r : * * * comentario3
+
+;verifica se tem mais de um em branco consecutivo, para evitar loop
+comentario3 * * r : * * * comentario4
+comentario3 \s * * : * * * HALT-REJECT
+
+comentario4 * * r : \s * * comentario4
+comentario4 \s * * : * * * comentario3
+comentario4 \n * r : \s * * 0
 
 
-
-
+;VERIFICA NOVA LINHA
+novalinha \n * r : * * * novalinha2
+novalinha2 * * * : * * * 0
+novalinha2 \n * * : * * * HALT-REJECT
 
 
 
