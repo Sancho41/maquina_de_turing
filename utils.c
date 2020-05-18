@@ -66,7 +66,39 @@ int blank_line(char *line)
   return blank_char == size;
 }
 
-char **split(char *string, int qtd_strings)
+char *convert_string_to_format(char *entry)
+{
+  if (entry[0] != '\\')
+    return entry;
+
+  if (entry[1] == 'n')
+    return "\n";
+
+  if (entry[1] == 't')
+    return "\t";
+
+  if (entry[1] = 's')
+    return " ";
+}
+
+char *convert_format_to_string(char *entry)
+{
+  char check = entry[0];
+  if ((int)check >= 32)
+    return entry;
+
+  if (check == '\n')
+    return "\\n";
+
+  if (check == '\t')
+    return "\\t";
+
+  // if (check == ' ')
+  //   return " ";
+}
+
+char **
+split(char *string, int qtd_strings)
 {
   char **string_vector;
   char *token;
@@ -82,10 +114,24 @@ char **split(char *string, int qtd_strings)
     aux = (char *)malloc(sizeof(char) * strlen(token));
     strcpy(aux, token);
 
-    string_vector[index] = aux;
+    string_vector[index] = convert_string_to_format(aux);
 
     token = strtok(NULL, " :\n\r");
     index++;
   }
   return string_vector;
+}
+
+int compare(char *a, char *b)
+{
+  int len, i, comp;
+  len = strlen(a);
+  comp = len;
+
+  for (i = 0; i < len; i++)
+  {
+    if (a[i] == b[i] || a[i] == '*' || b[i] == '*')
+      comp--;
+  }
+  return comp;
 }

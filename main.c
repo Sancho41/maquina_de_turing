@@ -1,85 +1,59 @@
 #include <stdio.h>
-#include "utils.c"
-#include "machine.c"
+#include "machine_multitape.c"
 #include <unistd.h>
 
 int main()
 {
-  // int i = 0;
-  // int tam = 0;
-  // int *int_file;
-  // char *file;
+  char *input;
 
-  // file = file_from_stdin();
-  // int_file = file_to_int(file, &tam);
-
-  // printf("%s\n", file);
-
-  // printf("Quantidade de caracteres: %d\n", tam);
-
-  // for (i = 0; i < strlen(file); i++)
-  // {
-  //   printf("%d\n", int_file[i]);
-  // }
-
-  // char *input;
-  // TAPE *tape;
-  // int input_size;
-
-  // input = file_from_stdin();
-  // input_size = strlen(input);
-
-  // tape = intialize_tape(input, input_size);
-
-  // do
-  // {
-  //   printf("[%c] ", tape->current->value);
-  //   move_right(tape);
-  // } while (tape->current->value != '~');
-  // printf("[%c]\n", tape->current->value);
-
-  // http://morphett.info/turing/turing.html
+  input = file_from_stdin();
 
   MACHINE *machine;
-  int step_counter = 0;
-  char *input_value;
-  // char *input_program;
+  machine = create_machine();
+  int qtd_tapes, i, step_counter = 0;
 
-  // scanf("%m[^\n]s", &input_program);
+  load_program(machine, "programs/reconhecedor.turing");
 
-  printf("Loading program file: %s...\n", "programs/palindrome_detector.turing");
-  machine = load_program("programs/palindrome_detector.turing");
+  printf("Programa '%s' carregado\n", machine->program_loaded);
+  printf("Carregando fitas (quantidade de fitas: %d)...\n\n", machine->qtd_tapes);
 
-  if (machine == NULL)
-    return 0;
+  load_tapes(machine, input, EMPTY);
+  qtd_tapes = machine->qtd_tapes;
 
-  printf("Program loaded!\n");
-
-  printf("Type initial value of the tape (TYPE _ INSTEAD SPACE): ");
-  scanf("%m[^\n]s", &input_value);
-  load_tape(machine, input_value);
-
-  printf("Tape initial state:\n");
-  print_tape(machine->tape);
-
-  printf("\nExecuting program...\n\n ");
-
-  char *current_state;
-  current_state = machine->current_state->state;
-  while (strcmp(current_state, "halt") && strcmp(current_state, "halt-accept") && strcmp(current_state, "halt-reject"))
+  for (i = 0; i < qtd_tapes; i++)
   {
-    next_step(machine);
-    current_state = machine->current_state->state;
-    step_counter++;
-
-    printf("\r");
-    print_tape(machine->tape);
-    fflush(stdout);
-    usleep(100000);
+    print_tape(machine->tapes[i]);
+    printf("\n");
   }
 
-  printf("\n\nLast state: %s\n", current_state);
-  printf("Steps taken: %d\n", step_counter);
+  printf("\nIniciando computação:\n\n");
+
+  for (i = 0; i < qtd_tapes + 3; i++)
+    printf("\n");
+
+  while (!machine->halted)
+  {
+    next_step(machine);
+    step_counter++;
+
+    for (i = 0; i < qtd_tapes + 3; i++)
+      printf("\033[F");
+
+    printf("State: %s\n", machine->current_state->state);
+    printf("Step: %d\n\n", step_counter);
+
+    for (i = 0; i < qtd_tapes; i++)
+    {
+      print_tape(machine->tapes[i]);
+      printf("\n");
+    }
+
+    fflush(stdout);
+    usleep(150000);
+  }
+
+  printf("\nEnd state: %s\n", machine->end_state);
+  printf("Step counter: %d\n", step_counter);
 
   return 0;
 }

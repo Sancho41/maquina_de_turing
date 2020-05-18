@@ -1,6 +1,7 @@
 #include <stdlib.h>
-#define BLANK '_'
-#define EMPTY "_"
+#include <stdio.h>
+#define BLANK ' '
+#define EMPTY " "
 
 typedef struct TAPE
 {
@@ -20,6 +21,7 @@ CELL *new_cell(char value)
   new->value = value;
   new->next = NULL;
   new->prev = NULL;
+
   return new;
 }
 
@@ -120,24 +122,39 @@ void print_tape(TAPE *tape)
 {
   CELL *start = tape->head;
   CELL *aux;
+  CELL *current = start;
+  char *value;
+  char *current_value = convert_format_to_string(&start->value);
+  int cont = 0;
 
-  while (start->prev != NULL)
+  while (start->prev != NULL && cont++ < 10)
     start = start->prev;
   aux = start;
 
-  while (aux != NULL)
-  {
-    if (aux == tape->head)
-    {
-      printf("\033[1;31m");
-      printf("[%c]", aux->value);
-      printf("\033[0m");
-    }
-    else
-    {
-      printf("[%c]", aux->value);
-    }
+  if (aux != NULL)
+    if (aux->prev != NULL)
+      printf("...");
 
+  while (aux != current)
+  {
+    value = convert_format_to_string(&aux->value);
+    printf("[%s]", value);
     aux = aux->next;
   }
+
+  printf("\033[1;31m[%s]\033[0m", current_value);
+
+  cont = 0;
+
+  while (aux != NULL && cont++ < 10)
+  {
+    value = convert_format_to_string(&aux->value);
+
+    printf("[%s]", value);
+    aux = aux->next;
+  }
+
+  if (aux != NULL)
+    if (aux->next != NULL)
+      printf("...");
 }

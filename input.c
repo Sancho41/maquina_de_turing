@@ -11,7 +11,7 @@ int main()
   int tam = 10;
   int *array;
 
-  scanf("%d", &i);
+  scanf("%m[^\n]s%c*", &i);
   i = i * 2;
   printf("\n");
 

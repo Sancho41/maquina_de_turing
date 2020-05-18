@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "tape.c"
 #include "utils.c"
+#include "tape.c"
 #include <unistd.h>
 
 typedef struct MACHINE
@@ -139,17 +139,38 @@ STATE *find_or_create_state(MACHINE *machine, char *state_name)
 
 INSTRUCTION *find_instruction(STATE *sate, char *head)
 {
-  INSTRUCTION *aux;
+  INSTRUCTION *aux, *found;
   aux = sate->instruction_list;
+  int min = 99999;
+  int i;
 
   while (aux != NULL)
   {
-    if (strcmp(aux->cur_symbols, head) == 0)
-      break;
+    i = compare(aux->cur_symbols, head);
+
+    if (i < min)
+    {
+      min = i;
+      found = aux;
+    }
     aux = aux->next;
   }
 
-  return aux;
+  if (min == strlen(head))
+  {
+    return NULL;
+  }
+
+  int j;
+
+  for (j = 0; j < strlen(head); j++)
+  {
+    if (found->cur_symbols[j] != head[j])
+      if (found->cur_symbols[j] != '*')
+        return NULL;
+  }
+
+  return found;
 }
 
 int load_instruction(MACHINE *machine, char *line)
@@ -350,7 +371,8 @@ int next_step(MACHINE *machine)
     for (i = 0; i < qtd_tapes; i++)
     {
       head = tapes[i]->head;
-      head->value = instruction->new_symbols[i];
+      if (instruction->new_symbols[i] != '*')
+        head->value = instruction->new_symbols[i];
 
       direction = instruction->directions[i];
 
@@ -379,52 +401,20 @@ int next_step(MACHINE *machine)
   }
 }
 
-// Temporário
-int main()
-{
-  MACHINE *machine;
-  machine = create_machine();
-  int qtd_tapes, i, step_counter = 0;
+// // Temporário
+// int main()
+// {
+//   MACHINE *machine;
+//   machine = create_machine();
+//   int qtd_tapes, i, step_counter = 0;
 
-  load_program(machine, "programs/string_comparator_2_tapes.turing");
+//   load_program(machine, "programs/reconhecedor.turing");
 
-  printf("Programa carregado\n");
-  printf("Carregando fitas...\n\n");
+//   load_tapes(machine, "#include <stdio.h>\n", EMPTY);
 
-  load_tapes(machine, "abba_abba", EMPTY);
-  qtd_tapes = machine->qtd_tapes;
+//   // show_states(machine);
+//   print_tape(machine->tapes[0]);
+//   next_step(machine);
 
-  for (i = 0; i < qtd_tapes; i++)
-  {
-    print_tape(machine->tapes[i]);
-    printf("\n");
-  }
-
-  printf("\nIniciando computação:\n\n");
-
-  for (i = 0; i < qtd_tapes; i++)
-    printf("\n");
-
-  while (!machine->halted)
-  {
-    next_step(machine);
-    step_counter++;
-
-    for (i = 0; i < qtd_tapes; i++)
-      printf("\033[F");
-
-    for (i = 0; i < qtd_tapes; i++)
-    {
-      print_tape(machine->tapes[i]);
-      printf("\n");
-    }
-
-    fflush(stdout);
-    usleep(100000);
-  }
-
-  printf("\nEnd state: %s\n", machine->end_state);
-  printf("Step counter: %d\n", step_counter);
-
-  return 0;
-}
+//   return 0;
+// }
