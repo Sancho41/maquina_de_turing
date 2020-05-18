@@ -83,9 +83,14 @@ char *convert_string_to_format(char *entry)
 
 char *convert_format_to_string(char *entry)
 {
+  char * r = (char *)malloc(sizeof(char) * 2);
   char check = entry[0];
   if ((int)check >= 32)
-    return entry;
+  {
+    r[0] = check;
+    r[1] = ' ';
+    return r;
+  }
 
   if (check == '\n')
     return "\\n";

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "machine_multitape.c"
 #include <unistd.h>
+#define PAUSE 0.5
 
 int main()
 {
@@ -39,8 +40,8 @@ int main()
     for (i = 0; i < qtd_tapes + 3; i++)
       printf("\033[F");
 
-    printf("State: %s\n", machine->current_state->state);
-    printf("Step: %d\n\n", step_counter);
+    printf("State: %s                   \n", machine->current_state->state);
+    printf("Step: %d                     \n\n", step_counter);
 
     for (i = 0; i < qtd_tapes; i++)
     {
@@ -49,7 +50,7 @@ int main()
     }
 
     fflush(stdout);
-    usleep(150000);
+    usleep(PAUSE * 1000000);
   }
 
   printf("\nEnd state: %s\n", machine->end_state);
