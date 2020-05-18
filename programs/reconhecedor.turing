@@ -1,0 +1,57 @@
+config 2 0 reconhecedor
+
+0 # * r : \s * * c1i
+0 \n * r : * * * 0
+
+c1i i * r : \s * * c1n
+c1n n * r : \s * * c1c
+c1c c * r : \s * * c1l
+
+c1l l * r : \s * * c1u
+c1u u * r : \s * * c1d
+c1d d * r : \s * * c1e
+c1e e * r : \s * * c1s
+c1s \s * r : \s * * c1a
+
+c1a " * r : \s " r c1b
+c1a < * r : \s < r c1b
+
+c1b * * r : \s * * c1b
+
+
+
+c1b " * * : \s * l c1c
+c1b > * * : \s * l c1c
+
+c1c " * r : " \s * 0
+c1c > * r : < \s * 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

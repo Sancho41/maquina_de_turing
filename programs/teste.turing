@@ -1,0 +1,38 @@
+; config lTapes Quantityr lInitial stater lprogrma namer
+config 3 q0 string_comparator
+; copia a primeira string para a segunda fita
+
+q0 0 0 r : _ _ _ : _ _ _ q0
+q0 1 1 r : _ _ _ : _ _ _ q0
+q0 # _ r : _ _ _ : _ _ _ q1
+
+q1 0 _ r : _ 0 r : _ _ _ q1
+q1 1 _ r : _ 1 r : _ _ _ q1
+q1 _ _ l : _ _ l : _ _ _ q2
+
+q2 _ _ l : 0 0 _ : _ _ _ q2
+q2 _ _ l : 1 1 _ : _ _ _ q2
+q2 1 1 _ : 0 0 _ : _ _ _ q3
+q2 1 1 _ : 1 1 _ : _ _ _ q3
+q2 0 0 _ : 1 1 _ : _ _ _ q3
+q2 0 0 _ : 0 0 _ : _ _ _ q3
+
+q3 1 1 l : 0 0 l : _ 1 l q3
+q3 0 0 l : 1 1 l : _ 1 l q3
+q3 0 0 l : 0 0 l : _ 0 l q3
+q3 1 1 l : 1 1 l : _ 0 l q4
+q3 _ _ _ : _ _ _ : _ _ _ HALT
+q3 1 1 l : _ _ l : _ 1 l q3
+q3 0 0 l : _ _ l : _ 0 l q3
+q3 _ _ l : 1 1 l : _ 1 l q3
+q3 _ _ l : 0 0 l : _ 0 l q3
+
+q4 0 0 l : 0 0 l : _ 1 l q3
+q4 0 0 l : 1 1 l : _ 0 l q3
+q4 1 1 l : 0 0 l : _ 0 l q4
+q4 1 1 l : 1 1 l : _ 1 l q4
+q4 _ _ l : 0 0 l : _ 1 l q3
+q4 _ _ l : 1 1 l : _ 0 l q4
+q4 1 1 l : _ _ l : _ 0 l q4
+q4 0 0 l : _ _ l : _ 1 l q3
+q4 _ _ _ : _ _ _ : _ 1 _ HALT
