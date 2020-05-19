@@ -81,25 +81,23 @@ char *convert_string_to_format(char *entry)
     return " ";
 }
 
-char *convert_format_to_string(char *entry)
+int print_value(char entry)
 {
-  char * r = (char *)malloc(sizeof(char) * 2);
-  char check = entry[0];
-  if ((int)check >= 32)
+
+  switch (entry)
   {
-    r[0] = check;
-    r[1] = ' ';
-    return r;
+  case '\n':
+    printf("\\n");
+    break;
+
+  case '\t':
+    printf("\\t");
+    break;
+  
+  default:
+    printf("%c ", entry);
+    break;
   }
-
-  if (check == '\n')
-    return "\\n";
-
-  if (check == '\t')
-    return "\\t";
-
-  // if (check == ' ')
-  //   return " ";
 }
 
 char **
@@ -139,4 +137,31 @@ int compare(char *a, char *b)
       comp--;
   }
   return comp;
+}
+
+char *file_to_array(char *path)
+{
+  char *buffer = NULL;
+  size_t size = 0;
+
+  /* Open your_file in read-only mode */
+  FILE *fp = fopen(path, "r");
+
+  /* Get the buffer size */
+  fseek(fp, 0, SEEK_END); /* Go to end of file */
+  size = ftell(fp); /* How many bytes did we pass ? */
+
+  /* Set position of stream to the beginning */
+  rewind(fp);
+
+  /* Allocate the buffer (no need to initialize it with calloc) */
+  buffer = malloc((size + 1) * sizeof(*buffer)); /* size + 1 byte for the \0 */
+
+  /* Read the file into the buffer */
+  fread(buffer, size, 1, fp); /* Read 1 chunk of size bytes from fp into buffer */
+
+  /* NULL-terminate the buffer */
+  buffer[size] = '\0';
+
+  return buffer;
 }

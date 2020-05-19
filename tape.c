@@ -123,8 +123,8 @@ void print_tape(TAPE *tape)
   CELL *start = tape->head;
   CELL *aux;
   CELL *current = start;
-  char *value;
-  char *current_value = convert_format_to_string(&start->value);
+  char value;
+  char current_value = start->value;
   int cont = 0, i;
 
   while (start->prev != NULL && ++cont <= 10)
@@ -136,12 +136,16 @@ void print_tape(TAPE *tape)
 
   while (aux != current)
   {
-    value = convert_format_to_string(&aux->value);
-    printf("[%s]", value);
+    value = aux->value;
+    printf("[");
+    print_value(value);
+    printf("]");
     aux = aux->next;
   }
 
-  printf("\033[1;31m[ %s]\033[0m", current_value);
+  printf("\033[1;31m[ ");
+  print_value(current_value);
+  printf("]\033[0m");
 
   cont = 0;
 
@@ -149,9 +153,10 @@ void print_tape(TAPE *tape)
 
   while (aux != NULL && cont++ < 10)
   {
-    value = convert_format_to_string(&aux->value);
-
-    printf("[%s]", value);
+    value = aux->value;
+    printf("[");
+    print_value(value);
+    printf("]");
     aux = aux->next;
   }
 

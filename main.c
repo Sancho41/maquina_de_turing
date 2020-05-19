@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include "machine_multitape.c"
 #include <unistd.h>
-#define PAUSE 0.5
+#define PAUSE 0.2
 
 int main()
 {
   char *input;
 
-  input = file_from_stdin();
+  // input = file_from_stdin();
+  input = file_to_array("testes.c");
 
   MACHINE *machine;
   machine = create_machine();
@@ -18,7 +19,7 @@ int main()
   printf("Programa '%s' carregado\n", machine->program_loaded);
   printf("Carregando fitas (quantidade de fitas: %d)...\n\n", machine->qtd_tapes);
 
-  load_tapes(machine, input, EMPTY);
+  load_tapes(machine,input, EMPTY);
   qtd_tapes = machine->qtd_tapes;
 
   for (i = 0; i < qtd_tapes; i++)
@@ -50,7 +51,13 @@ int main()
     }
 
     fflush(stdout);
-    usleep(PAUSE * 1000000);
+    // usleep(PAUSE * 1000000);
+    if (step_counter >= 40)
+    {
+      // usleep(PAUSE * 1000000);
+      // getchar();
+      // printf("\033[F");
+    }
   }
 
   printf("\nEnd state: %s\n", machine->end_state);

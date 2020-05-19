@@ -1,7 +1,14 @@
 config 2 0 reconhecedor
 
+; fitas: <principal> <pilha de operadores>
+
+;VAI PARA A VERIFICAÇÃO DE DECLARAÇÃO;
+0 * * * : * * * identacao
+
+0 \s * * : * * * HALT-ACCEPT
+
 ;VAI PARA VERIFICAÇÃO DE NOVA LINHA
-0 \n * r : * * * novalinha
+0 \n * * : * * * novalinha
 
 ;VAI PARA VERIFICAÇÃO DE INCLUDE
 0 # * r : \s * * c1i
@@ -9,6 +16,9 @@ config 2 0 reconhecedor
 ;VAI PARA A VERIFICAÇÃO DE COMENTÁRIO
 0 / * r : * * * comentario
 
+0 } * * : * * l colchete
+colchete } * r : { \s * colchete2
+colchete2 \n * * : * * * 0
 
 ; VERIFICA INCLUDE
 ; verifica se está escrito exatamente #include 
@@ -55,4 +65,98 @@ comentario4 \n * r : \s * * 0
 ;VERIFICA NOVA LINHA
 novalinha \n * r : * * * novalinha2
 novalinha2 * * * : * * * 0
-novalinha2 \n * * : * * * HALT-REJECT
+novalinha2 \n * r : * * * novalinha3
+novalinha3 * * * : * * * 0
+novalinha3 \n * r : * * * novalinha4
+novalinha4 * * * : * * * 0
+novalinha4 \n * r : * * * HALT-REJECT
+
+;VERIFICA DECLARACAO;
+;identacao
+identacao * * * : * * l identacao1
+identacao1 * * r : \s * r declaracao1
+identacao1 \t * r : { * l identacao2
+
+identacao2 * * * : * * r declaracao_ident1
+identacao2 * * r : { * * HALT-REJECT
+identacao2 } * r : { * l identacao_colchete.1
+identacao2 \t * r : * * * HALT-REJECT
+identacao2 \t * r : { * l identacao2
+
+identacao_colchete.1 \n * * : * * r identacao_colchete.2
+identacao_colchete.2 * * * : * * r identacao_colchete.2
+identacao_colchete.2 * * * : \s * l identacao_colchete.3
+identacao_colchete.3 * * * : { \s * 0
+
+declaracao_ident1 * * * : * * r declaracao_ident1
+declaracao_ident1 * * * : \s * * declaracao1
+
+;tipo
+declaracao1 * * r : * * * declaracao1
+declaracao1 \s * r : * * * declaracao2
+
+;depois do espaço não pode haver \t \s \n
+declaracao2 * * r : * * * declaracao_nome
+declaracao2 = * r : * * * atribuicao
+declaracao2 \s * * : * * * HALT-REJECT
+declaracao2 \n * * : * * * HALT-REJECT
+declaracao2 \t * * : * * * HALT-REJECT
+
+
+;nome
+declaracao_nome * * r : * * * declaracao_nome
+declaracao_nome \s * * : * * * HALT-REJECT
+declaracao_nome \n * * : * * * HALT-REJECT
+declaracao_nome \t * * : * * * HALT-REJECT
+declaracao_nome ( * r : * ( r declaracao_conteudo
+declaracao_nome ; * r : * * * declaracao_nome.1
+declaracao_nome.1 \n * * : * * * 0
+
+declaracao_conteudo * * r : * * * declaracao_conteudo
+declaracao_conteudo ) * * : * * l declaracao_conteudo_fim1
+
+declaracao_conteudo_fim1 ) * r : ( \s * declaracao_conteudo_fim2
+
+declaracao_conteudo_fim2 \n * r : * * * declaracao_ident_f
+declaracao_conteudo_fim2 ; * r : * * * 0
+
+
+declaracao_ident_f * * * : * * l declaracao_ident_f1
+
+declaracao_ident_f1 * * * : * * r declaracao_ident_f2
+declaracao_ident_f1 * * r : { * l HALT-REJECT
+declaracao_ident_f1 \t * r : * * l HALT-REJECT
+declaracao_ident_f1 \t * r : { * l declaracao_ident_f1
+
+declaracao_ident_f2 * * * : * * r declaracao_ident_f2
+declaracao_ident_f2 * * * : \s * * declaracao_ident_f3
+
+declaracao_ident_f3 { * r : * { r declaracao_ident_f4
+declaracao_ident_f4 \n * r : * * * 0
+
+
+atribuicao \s * r : * * * atribuicao2
+
+atribuicao2 * * r : * * * atribuicao_var
+atribuicao2 ; * * : * * * HALT-REJECT
+atribuicao2 \s * * : * * * HALT-REJECT
+atribuicao2 \t * * : * * * HALT-REJECT
+atribuicao2 " * r : * " r atribuicao_string
+
+atribuicao_var * * r : * * * atribuicao_var
+atribuicao_var \s * * : * * * HALT-REJECT
+atribuicao_var \n * * : * * * HALT-REJECT
+atribuicao_var \t * * : * * * HALT-REJECT
+atribuicao_var ; * * : * * * atribuicao_fim1
+
+atribuicao_string * * r : * * * atribuicao_string
+atribuicao_string \n * * : * * * HALT-REJECT
+atribuicao_string " * * : * * l atribuicao_string_fim
+atribuicao_string \ * r : * * * atribuicao_string_ignore
+atribuicao_string_ignore * * r : * * * atribuicao_string
+
+atribuicao_string_fim " * r : " \s * atribuicao_fim1
+
+atribuicao_fim1 ; * r : * * * atribuicao_fim2
+atribuicao_fim2 \n * r : * * * 0
+
