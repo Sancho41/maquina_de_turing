@@ -3,6 +3,7 @@ config 2 0 reconhecedor
 ; fitas: <principal> <pilha de operadores>
 
 ;VAI PARA A VERIFICAÇÃO DE DECLARAÇÃO;
+teste \ * * : * * * 0
 0 * * * : * * * identacao
 
 0 \s * * : * * * HALT-ACCEPT
@@ -130,14 +131,59 @@ declaracao_ident1 * * * : \s * * declaracao1
 
 ;tipo
 declaracao1 * * r : * * * declaracao1
-declaracao1 \s * r : * * * declaracao2
+declaracao1 \s * r : * * * verifica_tipo_declaracao
+declaracao1 ; * r : * * * var_solta
+declaracao1 ( * r : * ( r invoca_funcao
+
+;Uma variável solta
+var_solta \n * r : * * * 0
+
+;invacacao de função
+invoca_funcao * * * : * * * verifica_conteudo
+invoca_funcao \n * * : * * * HALT-REJECT
+invoca_funcao \s * * : * * * HALT-REJECT
+invoca_funcao \t * * : * * * HALT-REJECT
+invoca_funcao ; * * : * * * HALT-REJECT
+invoca_funcao ) * * : * * l invoca_funcao_fim
+
+;verifica_conteudo
+verifica_conteudo * * r : * * * verifica_var
+verifica_conteudo " * r : * * * verifica_string
+verifica_conteudo ' * r : * * * verifica_char
+
+verifica_var * * r : * * * verifica_var
+verifica_var \s * r : * * * HALT-REJECT
+verifica_var \t * r : * * * HALT-REJECT
+verifica_var ) * * : * * l invoca_funcao_fim
+verifica_var , * r : * * * verifica_var2
+verifica_var2 \s * * : * * * verifica_conteudo
+
+verifica_string * * r : * * * verifica_string
+verifica_string \n * * : * * * verifica_string
+verifica_string " * r : * * * verifica_string2
+verifica_string2 ) * * : * * l invoca_funcao_fim
+verifica_string2 , * r : * * * verifica_string_novo
+verifica_string_novo \s * * : * * * verifica_conteudo
+
+
+verifica_char * * r : * * * verifica_char2
+verifica_char \ * r : * * * verifica_char
+verifica_char2 ' * r : * * * verifica_char3
+verifica_char3 ) * * : * * l invoca_funcao_fim
+verifica_char3 , * r : * * * verifica_char4
+verifica_char4 \s * * : * * * verifica_conteudo
+
+;fim da funcao
+invoca_funcao_fim ) * r : ( \s * invoca_funcao_fim2
+invoca_funcao_fim2 ; * r : * * * invoca_funcao_fim3
+invoca_funcao_fim3 \n * r : * * * 0
 
 ;depois do espaço não pode haver \t \s \n
-declaracao2 * * r : * * * declaracao_nome
-declaracao2 = * r : * * * atribuicao
-declaracao2 \s * * : * * * HALT-REJECT
-declaracao2 \n * * : * * * HALT-REJECT
-declaracao2 \t * * : * * * HALT-REJECT
+verifica_tipo_declaracao * * r : * * * declaracao_nome
+verifica_tipo_declaracao = * r : * * * atribuicao
+verifica_tipo_declaracao \s * * : * * * HALT-REJECT
+verifica_tipo_declaracao \n * * : * * * HALT-REJECT
+verifica_tipo_declaracao \t * * : * * * HALT-REJECT
 
 
 ;nome
