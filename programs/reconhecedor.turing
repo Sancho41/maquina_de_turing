@@ -10,26 +10,29 @@ config 2 0 reconhecedor
 ;VAI PARA VERIFICAÇÃO DE NOVA LINHA
 0 \n * * : * * * novalinha
 
-;VAI PARA VERIFICAÇÃO DE INCLUDE
-0 # * r : \s * * c1i
+;VAI PARA VERIFICAÇÃO DE INCLUDE E DEFINE
+0 # * r : \s * * IOD
 
 ;VAI PARA A VERIFICAÇÃO DE COMENTÁRIO
 0 / * r : * * * comentario
 
-0 } * * : * * l colchete
+0 } * * : * * * identacao
 colchete } * r : { \s * colchete2
 colchete2 \n * * : * * * 0
 
-; VERIFICA INCLUDE
-; verifica se está escrito exatamente #include 
-c1i i * r : \s * * c1n
-c1n n * r : \s * * c1c
-c1c c * r : \s * * c1l
-c1l l * r : \s * * c1u
-c1u u * r : \s * * c1d
-c1d d * r : \s * * c1e
-c1e e * r : \s * * c1s
-c1s \s * r : \s * * c1a
+; VERIFICA INCLUDE OU DEFINE
+IOD i * r : * * * c1n
+IOD d * r : * * * d1e1
+
+;INCLUDE
+; verifica se está escrito exatamente #include
+c1n n * r : * * * c1c
+c1c c * r : * * * c1l
+c1l l * r : * * * c1u
+c1u u * r : * * * c1d
+c1d d * r : * * * c1e
+c1e e * r : * * * c1s
+c1s \s * r : * * * c1a
 
 ; Verifica abertura de marcador
 c1a " * r : \s " r c1b
@@ -47,6 +50,37 @@ c1b > * * : \s * l c1c
 c1c " * r : " \s * 0
 c1c > * r : < \s * 0
 
+;DEFINE
+; verifica se está escrito exatamente #define
+d1e1 e * r : * * * d1f
+d1f f * r : * * * d1i
+d1i i * r : * * * d1n
+d1n n * r : * * * d1e2
+d1e2 e * r : * * * d1s
+d1s \s * r : * * * dvar
+
+dvar * * r : * * * dvar
+dvar \n * * : * * * HALT-REJECT
+dvar \t * * : * * * HALT-REJECT
+dvar \s * * : * * * dvalue
+
+dvalue * * r : * * * dnumero
+dvalue " * r : * * * dstring
+dvalue ' * r : * * * dchar
+
+dnumero * * r : * * * dnumero
+dnumero \s * * : * * * HALT-REJECT
+dnumero \t * * : * * * HALT-REJECT
+dnumero \n * r : * * * 0
+
+dstring * * r : * * * dstring
+dstring \n * * : * * * HALT-REJECT
+dstring " * r : * * * dstring_fim
+dstring_fim \n * r : * * * 0
+
+dchar * * r : * * * dchar_fim
+dchar_fim ' * r : * * * dchar_fim2
+dchar_fim2 \n * r : * * * 0 
 
 ;VERIFICA COMENTARIO
 comentario / * r : * * * comentario2
@@ -76,14 +110,17 @@ novalinha4 \n * r : * * * HALT-REJECT
 identacao * * * : * * l identacao1
 identacao1 * * r : \s * r declaracao1
 identacao1 \t * r : { * l identacao2
+identacao1 } * * : { * * identacao2
 
 identacao2 * * * : * * r declaracao_ident1
+identacao2 } * * : * * * HALT-REJECT
 identacao2 * * r : { * * HALT-REJECT
 identacao2 } * r : { * l identacao_colchete.1
 identacao2 \t * r : * * * HALT-REJECT
 identacao2 \t * r : { * l identacao2
 
 identacao_colchete.1 \n * * : * * r identacao_colchete.2
+identacao_colchete.1 * * * : { * * HALT-REJECT
 identacao_colchete.2 * * * : * * r identacao_colchete.2
 identacao_colchete.2 * * * : \s * l identacao_colchete.3
 identacao_colchete.3 * * * : { \s * 0
