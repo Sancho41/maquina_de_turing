@@ -68,7 +68,7 @@ int blank_line(char *line)
 
 char *convert_string_to_format(char *entry)
 {
-  if (entry[0] != '\\')
+  if (entry[0] != '\\' || strlen(entry) == 1)
     return entry;
 
   if (entry[1] == 'n')
@@ -79,6 +79,9 @@ char *convert_string_to_format(char *entry)
 
   if (entry[1] = 's')
     return " ";
+
+  // if (entry[1] = 'm')
+  //   return "*";
 }
 
 int print_value(char entry)
@@ -133,7 +136,7 @@ int compare(char *a, char *b)
 
   for (i = 0; i < len; i++)
   {
-    if (a[i] == b[i] || a[i] == '*' || b[i] == '*')
+    if (a[i] == b[i] || a[i] == '~')
       comp--;
   }
   return comp;
@@ -144,23 +147,16 @@ char *file_to_array(char *path)
   char *buffer = NULL;
   size_t size = 0;
 
-  /* Open your_file in read-only mode */
   FILE *fp = fopen(path, "r");
 
-  /* Get the buffer size */
-  fseek(fp, 0, SEEK_END); /* Go to end of file */
-  size = ftell(fp); /* How many bytes did we pass ? */
-
-  /* Set position of stream to the beginning */
+  fseek(fp, 0, SEEK_END);
+  size = ftell(fp);
   rewind(fp);
 
-  /* Allocate the buffer (no need to initialize it with calloc) */
-  buffer = malloc((size + 1) * sizeof(*buffer)); /* size + 1 byte for the \0 */
+  buffer = malloc((size + 1) * sizeof(*buffer));
 
-  /* Read the file into the buffer */
-  fread(buffer, size, 1, fp); /* Read 1 chunk of size bytes from fp into buffer */
+  fread(buffer, size, 1, fp);
 
-  /* NULL-terminate the buffer */
   buffer[size] = '\0';
 
   return buffer;

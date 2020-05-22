@@ -52,11 +52,11 @@ int main()
 
     fflush(stdout);
     // usleep(PAUSE * 1000000);
-    if (step_counter >= 40)
+    if (step_counter >= 0)
     {
       // usleep(PAUSE * 1000000);
-      // getchar();
-      // printf("\033[F");
+      getchar();
+      printf("\033[F");
     }
   }
 

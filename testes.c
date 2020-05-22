@@ -1,14 +1,4 @@
-int main()
+a + b / strcmp(a && !(b + a)) || a((((((c * i)))))))
 {
-	int b;
-	b = 0;
-	int maafin()
-	{
-		int b;
-		return 0;
-	}
-	return 0;
+	a = i;
 }
-
-#include <stdio.h>
-#include "stdlib.h"

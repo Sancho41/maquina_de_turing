@@ -166,7 +166,7 @@ INSTRUCTION *find_instruction(STATE *sate, char *head)
   for (j = 0; j < strlen(head); j++)
   {
     if (found->cur_symbols[j] != head[j])
-      if (found->cur_symbols[j] != '*')
+      if (found->cur_symbols[j] != '~')
         return NULL;
   }
 
@@ -371,7 +371,7 @@ int next_step(MACHINE *machine)
     for (i = 0; i < qtd_tapes; i++)
     {
       head = tapes[i]->head;
-      if (instruction->new_symbols[i] != '*')
+      if (instruction->new_symbols[i] != '~')
         head->value = instruction->new_symbols[i];
 
       direction = instruction->directions[i];
