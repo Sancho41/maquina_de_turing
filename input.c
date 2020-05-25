@@ -6,37 +6,32 @@
 int main(int argc, char *argv[])
 {
 
-  int i = 0;
-  int j = 0;
-  int tam = 10;
-  int *array;
+	int i = 0;
+	int j = 0;
+	int tam = 10;
+	int *array;
 
-  scanf("%m[^\n]s%c*", &i);
-  i = i * 2;
-  printf("\n");
+	scanf("%m[^\n]s%c*", &i);
+	i = i * 2;
+	printf("\n");
 
-  array = (int *)malloc(sizeof(int) * tam);
+	array = malloc(sizeof(int) * tam);
 
-  for (j = 0; j < 10; j++)
-  {
-    array[j] = j + i;
-  }
+	for (j = 0; j < 10; j++)
+	{
+		array[j] = j + i;
+	}
 
-  i = 0;
+	i = 0;
 
-  while (i < tam)
-  {
-    printf("%d\n", array[i]);
-    i++;
-  }
+	while (i < tam)
+	{
+		printf("%d\n", array[i]);
+		i++;
+	}
 
-  i = tam - 1;
-  printf("\n");
+	i = tam - 1;
+	printf("\n");
 
-  do
-  {
-    printf("%d\n", array[i] * 2);
-  } while (i--);
-
-  return 0;
+	return 0;
 }
