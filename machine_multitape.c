@@ -15,6 +15,7 @@ typedef struct MACHINE
   char *program_loaded;
   char *initial_state;
   char *end_state;
+  char *heads;
   int halted;
 } MACHINE;
 
@@ -45,6 +46,7 @@ MACHINE *create_machine()
   machine->initial_state = NULL;
   machine->end_state = NULL;
   machine->halted = 0;
+  machine->heads = NULL;
   return machine;
 }
 
@@ -84,6 +86,7 @@ int load_config(MACHINE *machine, char *config_line)
     return 0;
   }
 
+  machine->heads = (char *)malloc(sizeof(char) * qtd_tapes);
   machine->qtd_tapes = qtd_tapes;
   machine->initial_state = initial_state;
   machine->program_loaded = program_name;
@@ -347,6 +350,21 @@ void show_states(MACHINE *machine)
   }
 }
 
+void get_tapes_heads(MACHINE *machine)
+{
+  TAPE **tapes;
+  int qtd_tapes;
+  int i;
+
+  tapes = machine->tapes;
+  qtd_tapes = machine->qtd_tapes;
+
+  for (i = 0; i < qtd_tapes; i++)
+  {
+    machine->heads[i] = (char)tapes[i]->head->value;
+  }
+}
+
 int next_step(MACHINE *machine)
 {
   char *heads;
@@ -362,7 +380,9 @@ int next_step(MACHINE *machine)
   tapes = machine->tapes;
   qtd_tapes = machine->qtd_tapes;
 
-  heads = get_tapes_heads(tapes, qtd_tapes);
+  get_tapes_heads(machine);
+
+  heads = machine->heads;
 
   instruction = find_instruction(state, heads);
 

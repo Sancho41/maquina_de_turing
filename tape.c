@@ -25,19 +25,6 @@ CELL *new_cell(char value)
   return new;
 }
 
-char *get_tapes_heads(TAPE **tapes, int qtd)
-{
-  char *heads;
-  int i;
-  heads = (char *)malloc(sizeof(char) * qtd);
-
-  for (i = 0; i < qtd; i++)
-  {
-    heads[i] = tapes[i]->head->value;
-  }
-  return heads;
-}
-
 TAPE *initialize_tape(char *entry, int entry_size)
 {
   int i;
