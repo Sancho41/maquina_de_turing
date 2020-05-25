@@ -1,153 +1,98 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #define BLANK ' '
 #define EMPTY " "
+#define MAX_TAPE_SIZE 1000
 
 typedef struct TAPE
 {
-  struct CELL *head;
+  // struct CELL *head;
+  char vector[MAX_TAPE_SIZE];
+  int index;
+  char head;
 } TAPE;
-
-typedef struct CELL
-{
-  char value;
-  struct CELL *next;
-  struct CELL *prev;
-} CELL;
-
-CELL *new_cell(char value)
-{
-  CELL *new = (CELL *)malloc(sizeof(CELL));
-  new->value = value;
-  new->next = NULL;
-  new->prev = NULL;
-
-  return new;
-}
 
 TAPE *initialize_tape(char *entry, int entry_size)
 {
+  TAPE *new_tape;
+  int tape_index;
+  char *tape;
   int i;
-  CELL *aux = NULL;
-  CELL *new = NULL;
-  TAPE *new_tape = (TAPE *)malloc(sizeof(TAPE));
 
-  CELL *last_cell = new_cell(BLANK);
-  CELL *first_cell = new_cell(BLANK);
+  if (entry_size > MAX_TAPE_SIZE)
+    return NULL;
 
-  // Adiciona a entrada na fita
+  new_tape = (TAPE *)malloc(sizeof(TAPE));
+  new_tape->index = 10;
+  memset(new_tape->vector, ' ', MAX_TAPE_SIZE);
+
+  tape_index = new_tape->index;
+  tape = new_tape->vector;
+
   for (i = 0; i < entry_size; i++)
   {
-    new = new_cell(entry[i]);
-    if (aux != NULL)
-    {
-      aux->next = new;
-      new->prev = aux;
-    }
-    else
-    {
-      new_tape->head = new;
-    }
-
-    // Adiciona o caractere branco no final da fita BLANK
-    if (i == entry_size - 1)
-    {
-      new->next = last_cell;
-      last_cell->prev = new;
-    }
-
-    aux = new;
+    tape[tape_index++] = entry[i];
   }
 
-  // Adiciona o caractere branco no inicio da fita BLANK
-  if (entry_size > 0)
-  {
-    first_cell->next = new_tape->head;
-    new_tape->head->prev = first_cell;
-  }
-  else
-  {
-    first_cell->next = last_cell;
-    last_cell->prev = first_cell;
-    new_tape->head = first_cell;
-  }
+  tape_index = 10;
+  new_tape->head = tape[tape_index];
 
   return new_tape;
 }
 
-void move_right(TAPE *t)
+void move_right(TAPE *tape)
 {
-  CELL *head = t->head;
-  CELL *aux = NULL;
-
-  if (head->next == NULL)
-  {
-    aux = new_cell(BLANK);
-    aux->prev = head;
-    head->next = aux;
-  }
-
-  t->head = head->next;
+  int *tape_index = &tape->index;
+  char *vector = tape->vector;
+  if (*tape_index < MAX_TAPE_SIZE - 1)
+    tape->head = vector[++*tape_index];
 }
 
-void move_left(TAPE *t)
+void move_left(TAPE *tape)
 {
-  CELL *head = t->head;
-  CELL *aux = NULL;
+  int *tape_index = &tape->index;
+  char *vector = tape->vector;
+  if (*tape_index > 0)
+    tape->head = vector[--*tape_index];
+}
 
-  if (head->prev == NULL)
-  {
-    aux = new_cell(BLANK);
-    aux->next = head;
-    head->prev = aux;
-  }
-
-  t->head = head->prev;
+void update_value(TAPE *tape, char new_val)
+{
+  int tape_index = tape->index;
+  tape->vector[tape_index] = new_val;
+  tape->head = new_val;
 }
 
 void print_tape(TAPE *tape)
 {
-  CELL *start = tape->head;
-  CELL *aux;
-  CELL *current = start;
+ 
+  int i;
+  int tape_index = tape->index;
   char value;
-  char current_value = start->value;
-  int cont = 0, i;
+  char *vector = tape->vector;
+  
+  tape_index -= 10;
 
-  while (start->prev != NULL && ++cont <= 10)
-    start = start->prev;
-  aux = start;
-
-  for (i = 10 - cont; i > 0; i--)
+  while(tape_index++ < 0)
     printf("[%c ]", BLANK);
-
-  while (aux != current)
+    
+  for (i = tape_index; i < tape_index + 20; i++)
   {
-    value = aux->value;
-    printf("[");
-    print_value(value);
-    printf("]");
-    aux = aux->next;
+    value = vector[i];
+
+    if (i == tape->index)
+    {
+      print_value(value, "\033[1;31m[ ", "]\033[0m");  
+    }
+    else if (i > MAX_TAPE_SIZE)
+    {
+      print_value(BLANK, "[", "]"); 
+    }
+    else
+    {
+      print_value(value, "[", "]");
+    }
+
   }
-
-  printf("\033[1;31m[ ");
-  print_value(current_value);
-  printf("]\033[0m");
-
-  cont = 0;
-
-  aux = current->next;
-
-  while (aux != NULL && cont++ < 10)
-  {
-    value = aux->value;
-    printf("[");
-    print_value(value);
-    printf("]");
-    aux = aux->next;
-  }
-
-  for (i = 0; i < 10 - cont; i++)
-    printf("[%c ]", BLANK);
-
 }

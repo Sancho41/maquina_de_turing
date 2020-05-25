@@ -353,6 +353,7 @@ void show_states(MACHINE *machine)
 void get_tapes_heads(MACHINE *machine)
 {
   TAPE **tapes;
+  TAPE *tape;
   int qtd_tapes;
   int i;
 
@@ -361,7 +362,8 @@ void get_tapes_heads(MACHINE *machine)
 
   for (i = 0; i < qtd_tapes; i++)
   {
-    machine->heads[i] = (char)tapes[i]->head->value;
+    tape = tapes[i];
+    machine->heads[i] = tape->head;
   }
 }
 
@@ -372,9 +374,9 @@ int next_step(MACHINE *machine)
   char direction;
   int qtd_tapes, i;
   TAPE **tapes;
+  TAPE *tape;
   STATE *state, *new_state;
   INSTRUCTION *instruction;
-  CELL *head;
 
   state = machine->current_state;
   tapes = machine->tapes;
@@ -390,9 +392,11 @@ int next_step(MACHINE *machine)
   {
     for (i = 0; i < qtd_tapes; i++)
     {
-      head = tapes[i]->head;
       if (instruction->new_symbols[i] != '~')
-        head->value = instruction->new_symbols[i];
+      {
+        tape = tapes[i];
+        update_value(tape, instruction->new_symbols[i]);
+      }
 
       direction = instruction->directions[i];
 

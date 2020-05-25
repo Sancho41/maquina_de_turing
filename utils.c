@@ -84,9 +84,10 @@ char *convert_string_to_format(char *entry)
   //   return "*";
 }
 
-int print_value(char entry)
+int print_value(char entry, char *before, char *after)
 {
 
+  printf("%s", before);
   switch (entry)
   {
   case '\n':
@@ -101,6 +102,7 @@ int print_value(char entry)
     printf("%c ", entry);
     break;
   }
+  printf("%s", after);
 }
 
 char **
