@@ -3,8 +3,20 @@
 #include <unistd.h>
 #define PAUSE 0.2
 
-int main()
+int main(int argc, char *argv[])
 {
+  int debug = 0, step = 0, direct = 0;
+  char exit;
+
+  if (argc >= 2)
+  {
+    debug = strcmp(argv[1], "debug") == 0;
+    if (argc > 2 && debug)
+      step = atoi(argv[2]);
+    
+    direct = strcmp(argv[argc - 1], "direct") == 0;
+  }
+
   char *input;
 
   // input = file_from_stdin();
@@ -51,12 +63,17 @@ int main()
     }
 
     fflush(stdout);
-    // usleep(PAUSE * 1000000);
-    if (step_counter >= 0)
+
+    if (!direct)
+      usleep(PAUSE * 1000000);
+
+    if (debug && step_counter >= step)
     {
       // usleep(PAUSE * 1000000);
-      getchar();
+      exit = getchar();
       printf("\033[F");
+      if (exit == '0')
+        debug = 0;
     }
   }
 
