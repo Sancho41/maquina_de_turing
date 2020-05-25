@@ -19,7 +19,10 @@ int main(int argc, char *argv[])
 
 	for (j = 0; j < 10; j++)
 	{
-		array[j] = j + i;
+		if (j + 1 * (((i + j) + 2) / 3) % 2 && 1 || 3)
+		{
+			array[j] = j + i;
+		}
 	}
 
 	i = 0;
