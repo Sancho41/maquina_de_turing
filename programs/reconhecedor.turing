@@ -3,7 +3,7 @@ config 2 0 reconhecedor
 ; fitas: <principal> <pilha de operadores>
 
 ;VAI PARA A VERIFICAÇÃO DE DECLARAÇÃO;
-teste \ ~ ~ : ~ ~ ~ 0
+
 0 ~ ~ ~ : ~ ~ ~ identacao
 
 0 \s ~ ~ : ~ ~ ~ HALT-ACCEPT
@@ -278,28 +278,28 @@ conteudo_if ~ ~ ~ : \s i r op_var
 
 ;VERIFICA WHILE
 verifica_while ~ ~ ~ : ~ ~ ~ verifica_while_h
-verifica_while_h h ~ r : ~ ~ ~ verifica_while_i
 verifica_while_h ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_while_i i ~ r : ~ ~ ~ verifica_while_l
+verifica_while_h h ~ r : ~ ~ ~ verifica_while_i
 verifica_while_i ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_while_l l ~ r : ~ ~ ~ verifica_while_e
+verifica_while_i i ~ r : ~ ~ ~ verifica_while_l
 verifica_while_l ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_while_e e ~ r : ~ ~ ~ verifica_while_s
+verifica_while_l l ~ r : ~ ~ ~ verifica_while_e
 verifica_while_e ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_while_s \s ~ r : ~ ~ ~ verifica_while__
+verifica_while_e e ~ r : ~ ~ ~ verifica_while_s
 verifica_while_s ~ ~ r : ~ ~ ~ declaracao1
+verifica_while_s \s ~ r : ~ ~ ~ verifica_while__
 verifica_while__ ( ~ r : \s ( r verifica_while_conteudo
 verifica_while_conteudo ~ ~ ~ : \s w r op_var
 
 
 ;VERIFICA FOR
 verifica_for ~ ~ ~ : ~ ~ ~ verifica_for_o
-verifica_for_o o ~ r : ~ ~ ~ verifica_for_r
 verifica_for_o ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_for_r r ~ r : ~ ~ ~ verifica_for_s
+verifica_for_o o ~ r : ~ ~ ~ verifica_for_r
 verifica_for_r ~ ~ ~ : ~ ~ ~ declaracao1
-verifica_for_s \s ~ r : ~ ~ ~ verifica_for__
+verifica_for_r r ~ r : ~ ~ ~ verifica_for_s
 verifica_for_s ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_for_s \s ~ r : ~ ~ ~ verifica_for__
 verifica_for__ ( ~ r : \s ( r verifica_for_conteudo1
 verifica_for_conteudo1 ~ ~ ~ : \s f r verifica_for_conteudo2
 verifica_for_conteudo2 ~ ~ ~ : \s f r verifica_for_conteudo3
@@ -380,6 +380,7 @@ op_ident2 \n ~ r : ~ ~ ~ 0
 op_fim , ~ r : c ~ r op_fim2
 op_fim2 \s ~ r : ~ ~ ~ op_var
 
-op_fim ; ~ r : f \s ~ op_var
+op_fim ; ~ r : f \s ~ op_fim2.1
+op_fim2.1 \s ~ r : ~ ~ ~ op_var
 
 op_fim ; ~ r : a \s ~ op_ident2
