@@ -1,4 +1,4 @@
-config 2 op reconhecedor
+config 2 0 reconhecedor
 
 ; fitas: <principal> <pilha de operadores>
 
@@ -136,18 +136,20 @@ declaracao1 \s ~ r : ~ ~ ~ verifica_tipo_declaracao
 declaracao1 ; ~ r : ~ ~ ~ var_solta
 declaracao1 ( ~ r : ~ ( r invoca_funcao
 declaracao1 / ~ r : ~ ~ ~ comentario
-declaracao1 i ~ r : ~ ~ ~ verifica_if
 
-;declaracao1 w ~ r : ~ ~ ~ verifica_while
+declaracao1 i ~ r : ~ ~ ~ verifica_if
+declaracao1 w ~ r : ~ ~ ~ verifica_while
+declaracao1 f ~ r : ~ ~ ~ verifica_for
 ;declaracao1 e ~ r : ~ ~ ~ verifica_else
-;declaracao1 for ~ r : ~ ~ ~ verifica_for
 
 
 ;Uma variável solta
 var_solta \n ~ r : ~ ~ ~ 0
 
 ;invacacao de função
-invoca_funcao ~ ~ ~ : ~ ~ ~ verifica_conteudo
+invoca_funcao ~ ~ ~ : \s c r invoca_funcao2
+invoca_funcao2 ~ ~ ~ : ~ ~ ~ op_var
+
 invoca_funcao \n ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao \s ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao \t ~ ~ : ~ ~ ~ HALT-REJECT
@@ -155,31 +157,31 @@ invoca_funcao ; ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao ) ~ ~ : ~ ~ l invoca_funcao_fim
 
 ;verifica_conteudo
-verifica_conteudo ~ ~ r : ~ ~ ~ verifica_var
-verifica_conteudo " ~ r : ~ ~ ~ verifica_string
-verifica_conteudo ' ~ r : ~ ~ ~ verifica_char
-
-verifica_var ~ ~ r : ~ ~ ~ verifica_var
-verifica_var \s ~ r : ~ ~ ~ HALT-REJECT
-verifica_var \t ~ r : ~ ~ ~ HALT-REJECT
-verifica_var ) ~ ~ : ~ ~ l invoca_funcao_fim
-verifica_var , ~ r : ~ ~ ~ verifica_var2
-verifica_var2 \s ~ r : ~ ~ ~ verifica_conteudo
-
-verifica_string ~ ~ r : ~ ~ ~ verifica_string
-verifica_string \n ~ ~ : ~ ~ ~ HALT-REJECT
-verifica_string " ~ r : ~ ~ ~ verifica_string2
-verifica_string2 ) ~ ~ : ~ ~ l invoca_funcao_fim
-verifica_string2 , ~ r : ~ ~ ~ verifica_string_novo
-verifica_string_novo \s ~ r : ~ ~ ~ verifica_conteudo
-
-
-verifica_char ~ ~ r : ~ ~ ~ verifica_char2
-verifica_char \ ~ r : ~ ~ ~ verifica_char
-verifica_char2 ' ~ r : ~ ~ ~ verifica_char3
-verifica_char3 ) ~ ~ : ~ ~ l invoca_funcao_fim
-verifica_char3 , ~ r : ~ ~ ~ verifica_char4
-verifica_char4 \s ~ r : ~ ~ ~ verifica_conteudo
+;verifica_conteudo ~ ~ r : ~ ~ ~ verifica_var
+;verifica_conteudo " ~ r : ~ ~ ~ verifica_string
+;verifica_conteudo ' ~ r : ~ ~ ~ verifica_char
+;
+;verifica_var ~ ~ r : ~ ~ ~ verifica_var
+;verifica_var \s ~ r : ~ ~ ~ HALT-REJECT
+;verifica_var \t ~ r : ~ ~ ~ HALT-REJECT
+;verifica_var ) ~ ~ : ~ ~ l invoca_funcao_fim
+;verifica_var , ~ r : ~ ~ ~ verifica_var2
+;verifica_var2 \s ~ r : ~ ~ ~ verifica_conteudo
+;
+;verifica_string ~ ~ r : ~ ~ ~ verifica_string
+;verifica_string \n ~ ~ : ~ ~ ~ HALT-REJECT
+;verifica_string " ~ r : ~ ~ ~ verifica_string2
+;verifica_string2 ) ~ ~ : ~ ~ l invoca_funcao_fim
+;verifica_string2 , ~ r : ~ ~ ~ verifica_string_novo
+;verifica_string_novo \s ~ r : ~ ~ ~ verifica_conteudo
+;
+;
+;verifica_char ~ ~ r : ~ ~ ~ verifica_char2
+;verifica_char \ ~ r : ~ ~ ~ verifica_char
+;verifica_char2 ' ~ r : ~ ~ ~ verifica_char3
+;verifica_char3 ) ~ ~ : ~ ~ l invoca_funcao_fim
+;verifica_char3 , ~ r : ~ ~ ~ verifica_char4
+;verifica_char4 \s ~ r : ~ ~ ~ verifica_conteudo
 
 ;fim da funcao
 invoca_funcao_fim ) ~ r : ( \s ~ invoca_funcao_fim2
@@ -196,21 +198,36 @@ verifica_tipo_declaracao \t ~ ~ : ~ ~ ~ HALT-REJECT
 
 ;nome
 declaracao_nome ~ ~ r : ~ ~ ~ declaracao_nome
-declaracao_nome \s ~ ~ : ~ ~ ~ HALT-REJECT
 declaracao_nome \n ~ ~ : ~ ~ ~ HALT-REJECT
 declaracao_nome \t ~ ~ : ~ ~ ~ HALT-REJECT
-declaracao_nome ( ~ r : ~ ( r declaracao_conteudo
+declaracao_nome ( ~ r : ~ ( r declaracao_funcao
 declaracao_nome ; ~ r : ~ ~ ~ declaracao_nome.1
+declaracao_nome \s ~ r : ~ ~ ~ checka_atribuicao
+checka_atribuicao = ~ r : ~ ~ ~ atribuicao
 declaracao_nome.1 \n ~ ~ : ~ ~ ~ 0
 
-declaracao_conteudo ~ ~ r : ~ ~ ~ declaracao_conteudo
-declaracao_conteudo ) ~ ~ : ~ ~ l declaracao_conteudo_fim1
+declaracao_funcao ~ ~ r : ~ ~ ~ declaracao_funcao_tipo
+declaracao_funcao ) ~ ~ : ~ ~ l declaracao_funcao_fim
+declaracao_funcao_tipo ~ ~ r : ~ ~ ~ declaracao_funcao_tipo
+declaracao_funcao_tipo \n ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_tipo \t ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_tipo ; ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_tipo ) ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_tipo , ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_tipo \s ~ r : ~ ~ ~ declaracao_funcao_var
 
-declaracao_conteudo_fim1 ) ~ r : ( \s ~ declaracao_conteudo_fim2
+declaracao_funcao_var ~ ~ r : ~ ~ ~ declaracao_funcao_var
+declaracao_funcao_var \s ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_var \t ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_var \n ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_var ; ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_var ( ~ ~ : ~ ~ ~ HALT-REJECT
+declaracao_funcao_var , ~ r : ~ ~ ~ declaracao_funcao_var_prox
+declaracao_funcao_var_prox \s ~ r : ~ ~ ~ declaracao_funcao_tipo
+declaracao_funcao_var ) ~ ~ : ~ ~ l declaracao_funcao_fim
 
-declaracao_conteudo_fim2 \n ~ r : ~ ~ ~ declaracao_ident_f
-declaracao_conteudo_fim2 ; ~ r : ~ ~ ~ 0
-
+declaracao_funcao_fim ) ~ r : ( \s ~ declaracao_funcao_fim2
+declaracao_funcao_fim2 \n ~ r : ~ ~ ~ declaracao_ident_f
 
 declaracao_ident_f ~ ~ ~ : ~ ~ l declaracao_ident_f1
 
@@ -226,7 +243,7 @@ declaracao_ident_f3 { ~ r : ~ { r declaracao_ident_f4
 declaracao_ident_f4 \n ~ r : ~ ~ ~ 0
 
 
-atribuicao \s ~ r : ~ ~ ~ atribuicao2
+atribuicao \s ~ r : \s a r op_var
 
 atribuicao2 ~ ~ r : ~ ~ ~ atribuicao_var
 atribuicao2 ; ~ ~ : ~ ~ ~ HALT-REJECT
@@ -254,53 +271,42 @@ atribuicao_fim2 \n ~ r : ~ ~ ~ 0
 ;VERIFICA IF
 verifica_if ~ ~ ~ : ~ ~ ~ declaracao1
 verifica_if f ~ r : ~ ~ ~ verifica_if2
-verifica_if2 ~ ~ r : ~ ~ ~ declaracao1
+verifica_if2 ~ ~ ~ : ~ ~ ~ declaracao1
 verifica_if2 \s ~ r : ~ ~ ~ verifica_if3
 verifica_if3 ( ~ r : \s ( r conteudo_if
+conteudo_if ~ ~ ~ : \s i r op_var
 
-conteudo_if ~ ~ r : ~ ~ ~ conteudo_if_var
-conteudo_if \s ~ ~ : ~ ~ ~ HALT-REJECT
-
-conteudo_if_var ~ ~ r : ~ ~ ~ conteudo_if_var
-conteudo_if_var \n ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_var \t ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_var \s ~ r : ~ ~ ~ conteudo_if_op_cond
-conteudo_if_var ) ~ ~ : ~ ~ l conteudo_if_fim
-
-conteudo_if_fim ) ~ r : ( \s ~ conteudo_if_fim2
-conteudo_if_fim2 \n ~ r : ~ ~ ~ declaracao_ident_f
-
-conteudo_if_op_cond + ~ r : ~ ~ ~ conteudo_if_op
-conteudo_if_op_cond - ~ r : ~ ~ ~ conteudo_if_op
-conteudo_if_op_cond * ~ r : ~ ~ ~ conteudo_if_op
-conteudo_if_op_cond / ~ r : ~ ~ ~ conteudo_if_op
-conteudo_if_op_cond % ~ r : ~ ~ ~ conteudo_if_op
-
-conteudo_if_op \s ~ r : ~ ~ ~ conteudo_if_op2
-
-conteudo_if_op2 ~ ~ ~ : ~ ~ ~ conteudo_if_var
-;O elemento apos o sinal não pode ser nenhum desses abaixo
-conteudo_if_op2 \s ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 \t ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 \n ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 { ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 } ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 [ ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 ] ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 + ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 - ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 * ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 / ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 % ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 > ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 < ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 = ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 ! ~ ~ : ~ ~ ~ HALT-REJECT
-conteudo_if_op2 | ~ ~ : ~ ~ ~ HALT-REJECT
+;VERIFICA WHILE
+verifica_while ~ ~ ~ : ~ ~ ~ verifica_while_h
+verifica_while_h h ~ r : ~ ~ ~ verifica_while_i
+verifica_while_h ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_while_i i ~ r : ~ ~ ~ verifica_while_l
+verifica_while_i ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_while_l l ~ r : ~ ~ ~ verifica_while_e
+verifica_while_l ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_while_e e ~ r : ~ ~ ~ verifica_while_s
+verifica_while_e ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_while_s \s ~ r : ~ ~ ~ verifica_while__
+verifica_while_s ~ ~ r : ~ ~ ~ declaracao1
+verifica_while__ ( ~ r : \s ( r verifica_while_conteudo
+verifica_while_conteudo ~ ~ ~ : \s w r op_var
 
 
-op ~ ~ ~ : ~ ( r op1
-op1 ~ ~ ~ : ~ i r op_var
+;VERIFICA FOR
+verifica_for ~ ~ ~ : ~ ~ ~ verifica_for_o
+verifica_for_o o ~ r : ~ ~ ~ verifica_for_r
+verifica_for_o ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_for_r r ~ r : ~ ~ ~ verifica_for_s
+verifica_for_r ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_for_s \s ~ r : ~ ~ ~ verifica_for__
+verifica_for_s ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_for__ ( ~ r : \s ( r verifica_for_conteudo1
+verifica_for_conteudo1 ~ ~ ~ : \s f r verifica_for_conteudo2
+verifica_for_conteudo2 ~ ~ ~ : \s f r verifica_for_conteudo3
+verifica_for_conteudo3 ~ ~ ~ : \s f r op_var
+
+;op ~ ~ ~ : ~ ( r op1
+;op1 ~ ~ ~ : ~ i r op_var
 op_var ~ ~ r : ~ ~ ~ op_var
 op_var \s ~ r : ~ ~ ~ op_operator
 op_var \t ~ r : ~ ~ ~ halt-reject
@@ -310,18 +316,28 @@ op_var ) ~ ~ : ~ ~ l op_par
 op_var ; ~ ~ : ~ ~ l op_fim
 op_var , ~ ~ : ~ ~ l op_fim
 
+op_var " ~ r : \s " r op_string
+op_var ' ~ r : \s ' r op_string
+
+op_string ~ ~ r : ~ ~ ~ op_string
+op_string \n ~ ~ : ~ ~ ~ HALT-REJECT
+op_string " ~ ~ : ~ ~ l op_string_check
+op_string ' ~ ~ : ~ ~ l op_string_check
+op_string_check " ~ r : " \s ~ op_var
+op_string_check ' ~ r : ' \s ~ op_var
+
 op_par ) ~ r : ( \s ~ op_par2
 
 op_par ) ~ r : i \s l op_ident
-op_par ) ~ r : f \s l op_ident
+op_par ) ~ r : c \s l op_ident
 op_par ) ~ r : w \s l op_ident
+op_par ) ~ r : f \s l op_ident
 
 op_par2 \s ~ r : ~ ~ ~ op_operator
 op_par2 ) ~ ~ : ~ ~ l op_par
 op_par2 ; ~ ~ : ~ ~ l op_fim
 op_par2 \n ~ ~ : ~ ~ l op_fim
 op_par2 , ~ ~ : ~ ~ l op_fim
-
 
 op_operator * ~ r : ~ ~ ~ op_operator2
 op_operator / ~ r : ~ ~ ~ op_operator2
@@ -332,11 +348,17 @@ op_operator ! ~ r : ~ ~ ~ op_operator_dif
 op_operator = ~ r : ~ ~ ~ op_operator2_eq
 op_operator & ~ r : ~ ~ ~ op_operator2_and
 op_operator | ~ r : ~ ~ ~ op_operator2_or
+op_operator > ~ r : ~ ~ ~ op_operator2_gol
+op_operator < ~ r : ~ ~ ~ op_operator2_gol
 
-op_operator_dif ~ ~ ~ : ~ ~ ~ op_operator2.1
+op_operator2_gol ~ ~ ~ : ~ ~ ~ op_operator2
+op_operator2_gol = ~ r : ~ ~ ~ op_operator2
+
+op_operator_dif ~ ~ ~ : ~ ~ ~ op_operator2
 op_operator_dif = ~ r : ~ ~ ~ op_operator2
 
 op_operator2_eq = ~ r : ~ ~ ~ op_operator2
+op_operator2_eq \s ~ ~ : ~ ~ ~ op_operator2
 op_operator2_and & ~ r : ~ ~ ~ op_operator2
 op_operator2_or | ~ r : ~ ~ ~ op_operator2
 
@@ -352,3 +374,12 @@ op_operator2.1 ; ~ ~ : ~ ~ ~ HALT-REJECT
 op_operator2.1 / ~ ~ : ~ ~ ~ HALT-REJECT
 
 op_ident \n ~ r : ( \s ~ declaracao_ident_f
+op_ident ; ~ r : ( \s ~ op_ident2
+op_ident2 \n ~ r : ~ ~ ~ 0
+
+op_fim , ~ r : c ~ r op_fim2
+op_fim2 \s ~ r : ~ ~ ~ op_var
+
+op_fim ; ~ r : f \s ~ op_var
+
+op_fim ; ~ r : a \s ~ op_ident2
