@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+char *buffer[50];
 
 // Recebe o arquivo através do STDIN e aloca
 // Retorna o ponteiro de onde foi alocado
@@ -105,29 +106,28 @@ int print_value(char entry, char *before, char *after)
   printf("%s", after);
 }
 
-char **
-split(char *string, int qtd_strings)
+char **split(char *string, int qtd_strings)
 {
-  char **string_vector;
+  // char **string_vector;
   char *token;
   char *aux;
   int index = 0;
 
   token = strtok(string, " :\n\r");
 
-  string_vector = (char **)malloc(sizeof(char *) * qtd_strings);
+  // string_vector = (char **)malloc(sizeof(char *) * qtd_strings);
 
   while (token != NULL)
   {
     aux = (char *)malloc(sizeof(char) * strlen(token));
     strcpy(aux, token);
 
-    string_vector[index] = convert_string_to_format(aux);
+    buffer[index] = convert_string_to_format(aux);
 
     token = strtok(NULL, " :\n\r");
     index++;
   }
-  return string_vector;
+  return buffer;
 }
 
 int compare(char *a, char *b)
