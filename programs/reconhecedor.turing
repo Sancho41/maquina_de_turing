@@ -6,7 +6,9 @@ config 2 0 reconhecedor
 
 0 ~ ~ ~ : ~ ~ ~ identacao
 
-0 \s ~ ~ : ~ ~ ~ HALT-ACCEPT
+0 \s ~ ~ : ~ ~ l verifica_pilha
+
+verifica_pilha \s ~ ~ : \s ~ ~ HALT-ACCEPT
 
 ;VAI PARA VERIFICAÇÃO DE NOVA LINHA
 0 \n ~ ~ : ~ ~ ~ novalinha
@@ -116,6 +118,7 @@ identacao1 } ~ ~ : { ~ ~ identacao2
 
 ;ignora do
 identacao1 \t ~ ~ : d ~ l identacao2
+identacao1 \t ~ ~ : i ~ l identacao2
 
 
 identacao2 ~ ~ ~ : ~ ~ r declaracao_ident1
@@ -123,8 +126,10 @@ identacao2 } ~ ~ : ~ ~ ~ HALT-REJECT
 identacao2 ~ ~ r : { ~ ~ HALT-REJECT
 identacao2 } ~ r : { ~ l identacao_colchete.1
 identacao2 } ~ ~ : d ~ l identacao2
+identacao2 } ~ ~ : i ~ l identacao2
 identacao2 \t ~ r : ~ ~ ~ HALT-REJECT
 identacao2 \t ~ ~ : d ~ l identacao2
+identacao2 \t ~ ~ : i ~ l identacao2
 identacao2 \t ~ r : { ~ l identacao2
 
 identacao_colchete.1 \n ~ ~ : ~ ~ r identacao_colchete.2
@@ -143,17 +148,23 @@ declaracao_ident1 ~ ~ ~ : ~ ~ r declaracao_ident1
 declaracao_ident1 ~ ~ ~ : \s ~ ~ declaracao1
 
 ;tipo
-declaracao1 ~ ~ r : ~ ~ ~ declaracao1
-declaracao1 \s ~ r : ~ ~ ~ verifica_tipo_declaracao
-declaracao1 ; ~ r : ~ ~ ~ var_solta
-declaracao1 ( ~ r : ~ ( r invoca_funcao
-declaracao1 / ~ r : ~ ~ ~ comentario
+declaracao1 ~ ~ ~ : ~ ~ l declaracao_verifica_else
+declaracao1 \n ~ ~ : ~ ~ ~ 0
+declaracao_verifica_else ~ ~ ~ : ~ ~ r declaracao1.1
+declaracao_verifica_else ~ ~ ~ : i \s ~ declaracao1.1
+declaracao_verifica_else e ~ r : i ~ ~ verifica_else
 
-declaracao1 i ~ r : ~ ~ ~ verifica_if
-declaracao1 w ~ r : ~ ~ ~ verifica_while
-declaracao1 f ~ r : ~ ~ ~ verifica_for
-declaracao1 d ~ r : ~ ~ ~ verifica_do_while
-;declaracao1 e ~ r : ~ ~ ~ verifica_else
+
+declaracao1.1 ~ ~ r : ~ ~ ~ declaracao1.1
+declaracao1.1 \s ~ r : ~ ~ ~ verifica_tipo_declaracao
+declaracao1.1 ; ~ r : ~ ~ ~ var_solta
+declaracao1.1 ( ~ r : ~ ( r invoca_funcao
+declaracao1.1 / ~ r : ~ ~ ~ comentario
+
+declaracao1.1 i ~ r : ~ ~ ~ verifica_if
+declaracao1.1 w ~ r : ~ ~ ~ verifica_while
+declaracao1.1 f ~ r : ~ ~ ~ verifica_for
+declaracao1.1 d ~ r : ~ ~ ~ verifica_do_while
 
 
 ;Uma variável solta
@@ -222,6 +233,7 @@ declaracao_ident_f1 ~ ~ r : { ~ l HALT-REJECT
 declaracao_ident_f1 \t ~ r : ~ ~ l HALT-REJECT
 declaracao_ident_f1 \t ~ r : { ~ l declaracao_ident_f1
 declaracao_ident_f1 \t ~ ~ : d ~ l declaracao_ident_f1
+declaracao_ident_f1 \t ~ ~ : i ~ l declaracao_ident_f1
 
 declaracao_ident_f2 ~ ~ ~ : ~ ~ r declaracao_ident_f2
 declaracao_ident_f2 ~ ~ ~ : \s ~ ~ declaracao_ident_f3
@@ -262,6 +274,18 @@ verifica_if2 ~ ~ ~ : ~ ~ ~ declaracao1
 verifica_if2 \s ~ r : ~ ~ ~ verifica_if3
 verifica_if3 ( ~ r : \s ( r conteudo_if
 conteudo_if ~ ~ ~ : \s i r op_var
+
+;VERIFICA ELSE
+verifica_else l ~ r : i ~ ~ verifica_else_s
+verifica_else_s s ~ r : i ~ ~ verifica_else_e
+verifica_else_e e ~ r : i ~ ~ verifica_else_s
+verifica_else_s \s ~ r : i \s ~ verifica_else_if
+verifica_else_s \n ~ r : i \s ~ declaracao_ident_f
+
+verifica_else_if i ~ r : ~ ~ ~ verifica_else_if_f
+verifica_else_if_f f ~ r : ~ ~ ~ verifica_else_if_s
+verifica_else_if_s \s ~ r : ~ ~ ~ verifica_if3
+
 
 ;VERIFICA WHILE
 verifica_while ~ ~ ~ : ~ ~ ~ verifica_while_h
@@ -328,11 +352,14 @@ op_string_check ' ~ r : ' \s ~ op_var
 
 op_par ) ~ r : ( \s ~ op_par2
 
-op_par ) ~ r : i \s l op_ident
+op_par ) ~ r : i \s l op_ident_if
 op_par ) ~ r : c \s l op_ident
 op_par ) ~ r : w \s l op_ident
 op_par ) ~ r : f \s l op_ident
 op_par ) ~ r : d \s l op_fim_do_while
+
+op_ident_if \n ~ r : ( i ~ declaracao_ident_f
+op_ident_if ; ~ r : ( \s ~ op_ident2
 
 op_par2 \s ~ r : ~ ~ ~ op_operator
 op_par2 ) ~ ~ : ~ ~ l op_par
