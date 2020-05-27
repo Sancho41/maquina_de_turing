@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
     for (i = 0; i < qtd_tapes + 3; i++)
       printf("\033[F");
 
-    printf("State: %s                   \n", machine->current_state->state);
-    printf("Step: %d                     \n\n", step_counter);
+    printf("Estado: %s                   \n", machine->current_state->state);
+    printf("Passo: %d                     \n\n", step_counter);
 
     for (i = 0; i < qtd_tapes; i++)
     {
@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     }
   }
 
-  printf("\nEnd state: %s\n", machine->end_state);
-  printf("Step counter: %d\n", step_counter);
+  printf("\nEstado final: %s\n", machine->end_state != NULL ? machine->end_state : "HALT-REJECT");
+  printf("Quantidade de passos: %d\n", step_counter);
 
   return 0;
 }
