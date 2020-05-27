@@ -114,18 +114,30 @@ identacao1 ~ ~ r : \s ~ r declaracao1
 identacao1 \t ~ r : { ~ l identacao2
 identacao1 } ~ ~ : { ~ ~ identacao2
 
+;ignora do
+identacao1 \t ~ ~ : d ~ l identacao2
+
+
 identacao2 ~ ~ ~ : ~ ~ r declaracao_ident1
 identacao2 } ~ ~ : ~ ~ ~ HALT-REJECT
 identacao2 ~ ~ r : { ~ ~ HALT-REJECT
 identacao2 } ~ r : { ~ l identacao_colchete.1
+identacao2 } ~ ~ : d ~ l identacao2
 identacao2 \t ~ r : ~ ~ ~ HALT-REJECT
+identacao2 \t ~ ~ : d ~ l identacao2
 identacao2 \t ~ r : { ~ l identacao2
 
 identacao_colchete.1 \n ~ ~ : ~ ~ r identacao_colchete.2
+identacao_colchete.1 w ~ ~ : ~ ~ r identacao_colchete.do_while
 identacao_colchete.1 ~ ~ ~ : { ~ ~ HALT-REJECT
 identacao_colchete.2 ~ ~ ~ : ~ ~ r identacao_colchete.2
 identacao_colchete.2 ~ ~ ~ : \s ~ l identacao_colchete.3
 identacao_colchete.3 ~ ~ ~ : { \s ~ 0
+
+identacao_colchete.do_while ~ ~ ~ : ~ ~ r identacao_colchete.do_while
+identacao_colchete.do_while ~ ~ ~ : \s ~ l identacao_colchete.do_while2
+identacao_colchete.do_while2 ~ ~ ~ : { \s l identacao_colchete.do_while3
+identacao_colchete.do_while3 w ~ r : d ~ r verifica_while
 
 declaracao_ident1 ~ ~ ~ : ~ ~ r declaracao_ident1
 declaracao_ident1 ~ ~ ~ : \s ~ ~ declaracao1
@@ -140,6 +152,7 @@ declaracao1 / ~ r : ~ ~ ~ comentario
 declaracao1 i ~ r : ~ ~ ~ verifica_if
 declaracao1 w ~ r : ~ ~ ~ verifica_while
 declaracao1 f ~ r : ~ ~ ~ verifica_for
+declaracao1 d ~ r : ~ ~ ~ verifica_do_while
 ;declaracao1 e ~ r : ~ ~ ~ verifica_else
 
 
@@ -155,33 +168,6 @@ invoca_funcao \s ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao \t ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao ; ~ ~ : ~ ~ ~ HALT-REJECT
 invoca_funcao ) ~ ~ : ~ ~ l invoca_funcao_fim
-
-;verifica_conteudo
-;verifica_conteudo ~ ~ r : ~ ~ ~ verifica_var
-;verifica_conteudo " ~ r : ~ ~ ~ verifica_string
-;verifica_conteudo ' ~ r : ~ ~ ~ verifica_char
-;
-;verifica_var ~ ~ r : ~ ~ ~ verifica_var
-;verifica_var \s ~ r : ~ ~ ~ HALT-REJECT
-;verifica_var \t ~ r : ~ ~ ~ HALT-REJECT
-;verifica_var ) ~ ~ : ~ ~ l invoca_funcao_fim
-;verifica_var , ~ r : ~ ~ ~ verifica_var2
-;verifica_var2 \s ~ r : ~ ~ ~ verifica_conteudo
-;
-;verifica_string ~ ~ r : ~ ~ ~ verifica_string
-;verifica_string \n ~ ~ : ~ ~ ~ HALT-REJECT
-;verifica_string " ~ r : ~ ~ ~ verifica_string2
-;verifica_string2 ) ~ ~ : ~ ~ l invoca_funcao_fim
-;verifica_string2 , ~ r : ~ ~ ~ verifica_string_novo
-;verifica_string_novo \s ~ r : ~ ~ ~ verifica_conteudo
-;
-;
-;verifica_char ~ ~ r : ~ ~ ~ verifica_char2
-;verifica_char \ ~ r : ~ ~ ~ verifica_char
-;verifica_char2 ' ~ r : ~ ~ ~ verifica_char3
-;verifica_char3 ) ~ ~ : ~ ~ l invoca_funcao_fim
-;verifica_char3 , ~ r : ~ ~ ~ verifica_char4
-;verifica_char4 \s ~ r : ~ ~ ~ verifica_conteudo
 
 ;fim da funcao
 invoca_funcao_fim ) ~ r : ( \s ~ invoca_funcao_fim2
@@ -235,6 +221,7 @@ declaracao_ident_f1 ~ ~ ~ : ~ ~ r declaracao_ident_f2
 declaracao_ident_f1 ~ ~ r : { ~ l HALT-REJECT
 declaracao_ident_f1 \t ~ r : ~ ~ l HALT-REJECT
 declaracao_ident_f1 \t ~ r : { ~ l declaracao_ident_f1
+declaracao_ident_f1 \t ~ ~ : d ~ l declaracao_ident_f1
 
 declaracao_ident_f2 ~ ~ ~ : ~ ~ r declaracao_ident_f2
 declaracao_ident_f2 ~ ~ ~ : \s ~ ~ declaracao_ident_f3
@@ -288,9 +275,22 @@ verifica_while_e ~ ~ ~ : ~ ~ ~ declaracao1
 verifica_while_e e ~ r : ~ ~ ~ verifica_while_s
 verifica_while_s ~ ~ r : ~ ~ ~ declaracao1
 verifica_while_s \s ~ r : ~ ~ ~ verifica_while__
-verifica_while__ ( ~ r : \s ( r verifica_while_conteudo
-verifica_while_conteudo ~ ~ ~ : \s w r op_var
+verifica_while__ ( ~ r : ~ ~ l verifica_do_while_init
 
+verifica_do_while_init ~ ~ ~ : ~ ~ r verifica_do_while_init1
+verifica_do_while_init ~ ~ ~ : d ( r verifica_do_while_init_do
+
+verifica_do_while_init1 ~ ~ ~ : \s ( r verifica_do_while_init2
+verifica_do_while_init2 ~ ~ ~ : \s w r op_var
+
+verifica_do_while_init_do ~ ~ ~ : \s d r op_var
+
+;VERIFICA DO WHILE
+verifica_do_while ~ ~ ~ : ~ ~ ~ verifica_do_while_o
+verifica_do_while_o ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_do_while_o o ~ r : ~ ~ ~ verifica_do_while_n
+verifica_do_while_n ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_do_while_n \n ~ r : \s d r declaracao_ident_f
 
 ;VERIFICA FOR
 verifica_for ~ ~ ~ : ~ ~ ~ verifica_for_o
@@ -332,6 +332,7 @@ op_par ) ~ r : i \s l op_ident
 op_par ) ~ r : c \s l op_ident
 op_par ) ~ r : w \s l op_ident
 op_par ) ~ r : f \s l op_ident
+op_par ) ~ r : d \s l op_fim_do_while
 
 op_par2 \s ~ r : ~ ~ ~ op_operator
 op_par2 ) ~ ~ : ~ ~ l op_par
@@ -377,6 +378,9 @@ op_ident \n ~ r : ( \s ~ declaracao_ident_f
 op_ident ; ~ r : ( \s ~ op_ident2
 op_ident2 \n ~ r : ~ ~ ~ 0
 
+op_fim_do_while ; ~ r : ( \s ~ op_fim_do_while_2
+op_fim_do_while_2 \n ~ r : ~ ~ ~ 0
+
 op_fim , ~ r : c ~ r op_fim2
 op_fim2 \s ~ r : ~ ~ ~ op_var
 
@@ -384,3 +388,5 @@ op_fim ; ~ r : f \s ~ op_fim2.1
 op_fim2.1 \s ~ r : ~ ~ ~ op_var
 
 op_fim ; ~ r : a \s ~ op_ident2
+
+;mais 27 instruções
