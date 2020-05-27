@@ -72,7 +72,6 @@ int main(int argc, char **argv)
 // Estrutura de um FOR
 // Declaração de função e seus atributos
 // Declaração de variável
-// Invocação de função e seus atributos
 // Atribuição de valores
 // Expreções matemáticas
 // Identação
