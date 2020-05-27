@@ -33,13 +33,11 @@ int main(int argc, char *argv[])
 		i++;
 	}
 
-	i = tam - 1;
-	printf("\n");
-
-	// do
-	// {
-	// 	printf("%d\n", array[i] * 2);
-	// } while (i--);
+	do
+	{
+		i = tam - 1;
+		printf("\n");
+	}while (i);
 
 	return 0;
 }
