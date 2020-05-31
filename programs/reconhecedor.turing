@@ -115,6 +115,7 @@ identacao ~ ~ ~ : ~ ~ l identacao1
 identacao1 ~ ~ r : \s ~ r declaracao1
 identacao1 \t ~ r : { ~ l identacao2
 identacao1 } ~ ~ : { ~ ~ identacao2
+identacao1 } ~ ~ : i \s l identacao1
 
 ;ignora do
 identacao1 \t ~ ~ : d ~ l identacao2
@@ -137,6 +138,7 @@ identacao_colchete.1 w ~ ~ : ~ ~ r identacao_colchete.do_while
 identacao_colchete.1 ~ ~ ~ : { ~ ~ HALT-REJECT
 identacao_colchete.2 ~ ~ ~ : ~ ~ r identacao_colchete.2
 identacao_colchete.2 ~ ~ ~ : \s ~ l identacao_colchete.3
+identacao_colchete.3 ~ ~ ~ : i \s l identacao_colchete.3
 identacao_colchete.3 ~ ~ ~ : { \s ~ 0
 
 identacao_colchete.do_while ~ ~ ~ : ~ ~ r identacao_colchete.do_while
@@ -268,19 +270,26 @@ atribuicao_fim1 ; ~ r : ~ ~ ~ atribuicao_fim2
 atribuicao_fim2 \n ~ r : ~ ~ ~ 0
 
 ;VERIFICA IF
-verifica_if ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_if ~ ~ ~ : ~ ~ ~ declaracao1.1
 verifica_if f ~ r : ~ ~ ~ verifica_if2
-verifica_if2 ~ ~ ~ : ~ ~ ~ declaracao1
+verifica_if2 ~ ~ ~ : ~ ~ ~ declaracao1.1
 verifica_if2 \s ~ r : ~ ~ ~ verifica_if3
 verifica_if3 ( ~ r : \s ( r conteudo_if
 conteudo_if ~ ~ ~ : \s i r op_var
 
 ;VERIFICA ELSE
+verifica_else ~ ~ ~ : i \s ~ declaracao1.1
 verifica_else l ~ r : i ~ ~ verifica_else_s
+
+verifica_else_s ~ ~ ~ : i \s ~ declaracao1.1
 verifica_else_s s ~ r : i ~ ~ verifica_else_e
-verifica_else_e e ~ r : i ~ ~ verifica_else_s
-verifica_else_s \s ~ r : i \s ~ verifica_else_if
-verifica_else_s \n ~ r : i \s ~ declaracao_ident_f
+
+verifica_else_e ~ ~ ~ : i \s ~ declaracao1.1
+verifica_else_e e ~ r : i ~ ~ verifica_else_sp
+
+verifica_else_sp ~ ~ ~ : i \s ~ declaracao1.1
+verifica_else_sp \s ~ r : i \s ~ verifica_else_if
+verifica_else_sp \n ~ r : i \s ~ declaracao_ident_f
 
 verifica_else_if i ~ r : ~ ~ ~ verifica_else_if_f
 verifica_else_if_f f ~ r : ~ ~ ~ verifica_else_if_s
