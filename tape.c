@@ -3,7 +3,7 @@
 #include <string.h>
 #define BLANK ' '
 #define EMPTY " "
-#define MAX_TAPE_SIZE 1000
+#define MAX_TAPE_SIZE 900
 
 typedef struct TAPE
 {
