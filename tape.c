@@ -3,13 +3,14 @@
 #include <string.h>
 #define BLANK ' '
 #define EMPTY " "
-#define MAX_TAPE_SIZE 900
+#define MAX_TAPE_SIZE 800
 
 typedef struct TAPE
 {
   // struct CELL *head;
-  char vector[MAX_TAPE_SIZE];
+  char *vector;
   int index;
+  int size;
   char head;
 } TAPE;
 
@@ -20,11 +21,13 @@ TAPE *initialize_tape(char *entry, int entry_size)
   char *tape;
   int i;
 
-  if (entry_size > MAX_TAPE_SIZE)
-    return NULL;
+  // if (entry_size > MAX_TAPE_SIZE)
+  //   return NULL;
 
   new_tape = (TAPE *)malloc(sizeof(TAPE));
   new_tape->index = 10;
+  new_tape->vector = (char*)malloc(sizeof(char) * entry_size + 20);
+  new_tape->size = entry_size + 20;
   memset(new_tape->vector, ' ', MAX_TAPE_SIZE);
 
   tape_index = new_tape->index;
@@ -68,16 +71,19 @@ void print_tape(TAPE *tape)
 {
  
   int i;
-  int tape_index = tape->index;
+  int tape_index = tape->index, blank_counter = 0;
   char value;
   char *vector = tape->vector;
   
-  tape_index -= 10;
+  tape_index -= 12;
 
-  while(tape_index++ < 0)
+  while(++tape_index < 0)
+  {
     printf("[%c ]", BLANK);
+    blank_counter++;
+  }
     
-  for (i = tape_index; i < tape_index + 20; i++)
+  for (i = tape_index; i < tape_index + 24 - blank_counter; i++)
   {
     value = vector[i];
 
@@ -85,7 +91,7 @@ void print_tape(TAPE *tape)
     {
       print_value(value, "\033[1;31m[ ", "]\033[0m");  
     }
-    else if (i > MAX_TAPE_SIZE)
+    else if (i >= tape->size)
     {
       print_value(BLANK, "[", "]"); 
     }
@@ -93,6 +99,5 @@ void print_tape(TAPE *tape)
     {
       print_value(value, "[", "]");
     }
-
   }
 }
