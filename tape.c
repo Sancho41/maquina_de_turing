@@ -5,15 +5,21 @@
 #define EMPTY " "
 #define MAX_TAPE_SIZE 800
 
+
+/**
+ * Struct de uma fita.
+*/
 typedef struct TAPE
 {
-  // struct CELL *head;
   char *vector;
   int index;
   int size;
   char head;
 } TAPE;
 
+/**
+ * Função que inicializa uma nova fita.
+*/
 TAPE *initialize_tape(char *entry, int entry_size)
 {
   TAPE *new_tape;
@@ -21,18 +27,20 @@ TAPE *initialize_tape(char *entry, int entry_size)
   char *tape;
   int i;
 
-  // if (entry_size > MAX_TAPE_SIZE)
-  //   return NULL;
-
   new_tape = (TAPE *)malloc(sizeof(TAPE));
   new_tape->index = 10;
+  // Aloca um vetor do tamanho da entrada mais 20 caracteres.
   new_tape->vector = (char*)malloc(sizeof(char) * entry_size + 20);
   new_tape->size = entry_size + 20;
-  memset(new_tape->vector, ' ', MAX_TAPE_SIZE);
+
+  // Inicializa o vetor com espaços em branco
+  memset(new_tape->vector, ' ', new_tape->size);
 
   tape_index = new_tape->index;
   tape = new_tape->vector;
 
+  // Copia a entrada para a fita, deixando 10 caracteres atras e 10
+  // caracteres na frente.
   for (i = 0; i < entry_size; i++)
   {
     tape[tape_index++] = entry[i];
@@ -44,6 +52,10 @@ TAPE *initialize_tape(char *entry, int entry_size)
   return new_tape;
 }
 
+/**
+ * Movimenta a fita para a direita e atualiza o valor do cabeçote 
+ * para a direta.
+*/
 void move_right(TAPE *tape)
 {
   int *tape_index = &tape->index;
@@ -52,6 +64,10 @@ void move_right(TAPE *tape)
     tape->head = vector[++*tape_index];
 }
 
+/**
+ * Movimenta a fita para a direita e atualiza o valor do cabeçote 
+ * para a esquerda.
+*/
 void move_left(TAPE *tape)
 {
   int *tape_index = &tape->index;
@@ -60,6 +76,9 @@ void move_left(TAPE *tape)
     tape->head = vector[--*tape_index];
 }
 
+/**
+ * Atualiza o valor da célula da fita de acordo.
+*/
 void update_value(TAPE *tape, char new_val)
 {
   int tape_index = tape->index;
@@ -67,6 +86,11 @@ void update_value(TAPE *tape, char new_val)
   tape->head = new_val;
 }
 
+/**
+ * Mostra a fita, passada por parâmetro, na tela.
+ * 
+ * Mostra sempre 21 células.
+*/
 void print_tape(TAPE *tape)
 {
  

@@ -3,70 +3,24 @@
 #include <string.h>
 char *buffer[50];
 
-// Recebe o arquivo através do STDIN e aloca
-// Retorna o ponteiro de onde foi alocado
-char *file_from_stdin()
-{
-  char c;
-  char *file;
-  int size = 0;
-
-  while ((c = getchar()) != EOF)
-  {
-    size++;
-
-    if (size == 1)
-    {
-      file = (char *)malloc(sizeof(char));
-      *file = c;
-    }
-    else
-    {
-      if ((int)c != 13)
-      {
-        file = (char *)realloc(file, sizeof(char) * size);
-        file[size - 1] = c;
-      }
-      else
-      {
-        size--;
-      }
-    }
-  }
-
-  return file;
-}
-
-// Recebe o array de caracteres e uma variável para definir o tamanho
-// Retorna um array de inteiros da conversão da string
-// Seta a variável tamanho.
-int *file_to_int(char *file, int *tam)
-{
-  int *int_file;
-  int tam_file = strlen(file);
-  int i = 0;
-  *tam = tam_file;
-
-  int_file = (int *)malloc(sizeof(int) * tam_file);
-
-  for (i = 0; i < tam_file; i++)
-  {
-    int_file[i] = (int)file[i];
-  }
-  return int_file;
-}
-
+/**
+ * Verifica se uma linha está em branco.
+*/
 int blank_line(char *line)
 {
   int i;
   int blank_char = 0;
   int size = strlen(line);
+  // Percorre toda a string e verifica se os caracteres são espaços.
   for (i = 0; i < size; i++)
     blank_char += line[i] == ' ' || line[i] == 13 || line[i] == 10;
 
   return blank_char == size;
 }
 
+/**
+ * Converte uma string paraum char correspondete.
+*/
 char *convert_string_to_format(char *entry)
 {
   if (entry[0] != '\\' || strlen(entry) == 1)
@@ -80,11 +34,12 @@ char *convert_string_to_format(char *entry)
 
   if (entry[1] = 's')
     return " ";
-
-  // if (entry[1] = 'm')
-  //   return "*";
 }
 
+/**
+ * Printa na tela o caracter, e altera para um outro caso seja caracter de
+ * formatação (\n, \t, [espaço]).
+*/
 int print_value(char entry, char *before, char *after)
 {
 
@@ -106,6 +61,10 @@ int print_value(char entry, char *before, char *after)
   printf("%s", after);
 }
 
+
+/**
+ * Divide uma string em várias sub strings.
+*/
 char **split(char *string, int qtd_strings)
 {
   // char **string_vector;
@@ -130,6 +89,9 @@ char **split(char *string, int qtd_strings)
   return buffer;
 }
 
+/**
+ * Comparação entre a cabeça da máquina e as instruções.
+*/
 int compare(char *a, char *b)
 {
   int len, i, comp;
@@ -144,6 +106,10 @@ int compare(char *a, char *b)
   return comp;
 }
 
+/**
+ * Recebe um caminho de um arquivo por parâmetro, coloca em vetor
+ * e retorna o vetor alocado.
+*/
 char *file_to_array(char *path)
 {
   char *buffer = NULL;
