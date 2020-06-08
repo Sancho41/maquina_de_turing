@@ -8,6 +8,7 @@ typedef struct CONFIG
   int step_by_step;
   int break_point;
   int direct;
+  int no_menu;
   double delay;
   char selected_program[50];
   char *input;
@@ -27,6 +28,7 @@ CONFIG initialize_config()
   new_config.direct = 0;
   new_config.delay = 0.2;
   new_config.input = NULL;
+  new_config.no_menu = 0;
   strcpy(new_config.selected_program, "programs/reconhecedor.turing");
   return new_config;
 }
@@ -71,6 +73,9 @@ void load_args(int argc, char *argv[], CONFIG *config)
         break;
       case 'i':
         config->input = argv[++i];
+        break;
+      case 'n':
+        config->no_menu = 1;
         break;
       }
     }
@@ -199,7 +204,7 @@ void load_tapes_from_user(CONFIG *config, MACHINE *machine)
     else
     {
       printf("Digite o conteudo da fita: \n");
-      scanf("%s[^\n]%*c", input);
+      scanf("%*c%[^\n]s%*c", input);
       tape = initialize_tape(input, strlen(input));
     }
   }
@@ -296,8 +301,11 @@ void compute(CONFIG *config, MACHINE *machine)
 void menu(CONFIG *config, MACHINE *machine)
 {
 
-  int op;
+  int op = 0;
   char selected_program[29] = "programs/reconhecedor.turing";
+
+  if (config->no_menu)
+    op = 3;
 
   do
   {
@@ -306,7 +314,9 @@ void menu(CONFIG *config, MACHINE *machine)
     printf("1. Mostrar as configurações da máquina.\n");
     printf("2. Alterar as configurações da máquina.\n");
     printf("3. Carregar fitas e iniciar computação.\n");
-    scanf("%d", &op);
+
+    if (op != 3)
+      scanf("%d", &op);
 
     switch (op)
     {
@@ -323,8 +333,11 @@ void menu(CONFIG *config, MACHINE *machine)
       break;
     case 3:
       load_tapes_from_user(config, machine);
-      printf("Pressione ENTER para iniciar a computação...\n");
-      scanf("%*c%*c");
+      if (!config->no_menu)
+      {
+        printf("Pressione ENTER para iniciar a computação...\n");
+        scanf("%*c%*c");
+      }
       compute(config, machine);
       op = 0;
       break;

@@ -424,21 +424,3 @@ int next_step(MACHINE *machine)
     return 0;
   }
 }
-
-// // Temporário
-// int main()
-// {
-//   MACHINE *machine;
-//   machine = create_machine();
-//   int qtd_tapes, i, step_counter = 0;
-
-//   load_program(machine, "programs/reconhecedor.turing");
-
-//   load_tapes(machine, "#include <stdio.h>\n", EMPTY);
-
-//   // show_states(machine);
-//   print_tape(machine->tapes[0]);
-//   next_step(machine);
-
-//   return 0;
-// }

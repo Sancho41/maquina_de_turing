@@ -424,5 +424,3 @@ op_fim ; ~ r : f \s ~ op_fim2.1
 op_fim2.1 \s ~ r : ~ ~ ~ op_var
 
 op_fim ; ~ r : a \s ~ op_ident2
-
-;mais 27 instruções

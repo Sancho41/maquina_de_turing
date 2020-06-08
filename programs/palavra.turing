@@ -1,0 +1,10 @@
+config 1 00 reconhecedor_de_palavra
+
+00 m ~ r 01
+01 a ~ r 02
+02 q ~ r 03
+03 u ~ r 04
+04 i ~ r 05
+05 n ~ r 06
+06 a ~ r 07
+07 \s ~ r HALT-ACCEPT

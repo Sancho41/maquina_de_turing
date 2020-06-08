@@ -1,0 +1,21 @@
+config 1 0 verificador_palindrome_binario
+
+0 1 \s r right1
+0 0 \s r right0
+0 \s \s ~ HALT-ACCEPT
+
+right1 1 1 r right1
+right1 0 0 r right1
+right1 \s ~ l right1.1
+right1.1 1 \s l left
+right1.1 \s \s ~ HALT-ACCEPT
+
+right0 0 0 r right0
+right0 1 1 r right0
+right0 \s ~ l right0.0
+right0.0 0 \s l left
+right0.0 \s \s ~ HALT-ACCEPT
+
+left 1 1 l left
+left 0 0 l left
+left \s \s r 0

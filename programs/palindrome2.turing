@@ -1,0 +1,13 @@
+config 2 0 verificador_palindrome_binario
+
+0 1 1 r : \s 1 r 0
+0 0 0 r : \s 0 r 0
+0 \s ~ l : ~ ~ ~ volta
+
+volta 1 1 l : ~ ~ ~ volta
+volta 0 0 l : ~ ~ ~ volta
+volta \s ~ r : \s ~ l verifica
+
+verifica 1 \s r : 1 \s l verifica
+verifica 0 \s r : 0 \s l verifica
+verifica \s ~ ~ : \s ~ ~ HALT-ACCEPT
