@@ -1,28 +1,29 @@
 config 1 0 binary_to_decimal
-0 1 1 _ 1
-0 0 0 _ 1
-1 _ _ r 1
+0 1 1 ~ 1
+0 0 0 ~ 1
+1 ~ \s r 1
 
 1 1 1 r 1a
 1 0 0 r 1a
 
+1a ~ \s l 2   
 1a 1 1 r 1a
 1a 0 0 r 1a
 
-1a _ _ l 2   
-1b _ _ r 1   
+1b ~ \s r 1   
 
 1b 0 0 r 1b
 1b 1 1 r 1b
 
+2 ~ \s r 20   
 2 1 0 l 3    
 2 0 1 l 2    
-2 _ _ r 20   
 
+3 ~ \s l 4    
 3 0 0 l 3    
 3 1 1 l 3    
 
-3 _ _ l 4    
+4 ~ 1 r 1b  
 4 0 1 r 1b   
 4 1 2 r 1b
 4 2 3 r 1b
@@ -33,20 +34,19 @@ config 1 0 binary_to_decimal
 4 7 8 r 1b
 4 8 9 r 1b
 4 9 0 l 4  
-4 _ 1 r 1b  
-20 _ _ l 21  
+20 ~ \s l 21  
 
-20 1 _ r 20  
-20 0 _ r 20  
+20 1 \s r 20  
+20 0 \s r 20  
 
-21 _ _ l 21
+21 ~ \s l 21
 
 21 0 0 l 21a
 21 1 1 l 21a
 
+21a ~ \s r halt
 21a 0 0 l 21a
 21a 1 1 l 21a
 
-21a _ _ r halt
 
 

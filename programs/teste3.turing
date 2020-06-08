@@ -1,4 +1,0 @@
-config 3 q0 multiplication
-q0 0 * r : * * * : * * * q0
-q0 1 * * : * * * : * * * HALT
-q0 _ * * : * * * : * * * HALT
