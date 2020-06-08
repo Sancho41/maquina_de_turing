@@ -276,7 +276,7 @@ void load_tapes_from_user(CONFIG *config, MACHINE *machine)
   }
   else
   {
-    printf("Deseja carregar o input de um arquivo? (s, n) ");
+    printf("Deseja carregar a entrada a partir de um arquivo? (s, n) ");
     scanf("%*c");
     scanf("%c", &op);
     if (op == 's' || op == 'S')
