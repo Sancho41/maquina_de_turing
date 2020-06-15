@@ -3,7 +3,6 @@
 #include <string.h>
 #define BLANK ' '
 #define EMPTY " "
-#define MAX_TAPE_SIZE 800
 
 
 /**
@@ -60,7 +59,7 @@ void move_right(TAPE *tape)
 {
   int *tape_index = &tape->index;
   char *vector = tape->vector;
-  if (*tape_index < MAX_TAPE_SIZE - 1)
+  if (*tape_index < tape->size - 1)
     tape->head = vector[++*tape_index];
 }
 
