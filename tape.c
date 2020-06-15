@@ -25,12 +25,14 @@ TAPE *initialize_tape(char *entry, int entry_size)
   int tape_index;
   char *tape;
   int i;
+  int offset = 30; // Quantidade de espaços em branco a serem adicionados
+                   // além da quantidade de caracteres da entrada.
 
   new_tape = (TAPE *)malloc(sizeof(TAPE));
-  new_tape->index = 10;
+  new_tape->index = offset / 2;
   // Aloca um vetor do tamanho da entrada mais 20 caracteres.
-  new_tape->vector = (char*)malloc(sizeof(char) * entry_size + 20);
-  new_tape->size = entry_size + 20;
+  new_tape->vector = (char*)malloc(sizeof(char) * entry_size + offset);
+  new_tape->size = entry_size + offset;
 
   // Inicializa o vetor com espaços em branco
   memset(new_tape->vector, ' ', new_tape->size);
@@ -45,7 +47,7 @@ TAPE *initialize_tape(char *entry, int entry_size)
     tape[tape_index++] = entry[i];
   }
 
-  tape_index = 10;
+  tape_index = offset / 2;
   new_tape->head = tape[tape_index];
 
   return new_tape;
